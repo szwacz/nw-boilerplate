@@ -13,7 +13,7 @@ var devManifest = projectRoot.read('package.json', 'json');
 var appManifest = projectRoot.read('app/package.json', 'json');
 
 // Version of Node-Webkit we need
-var runtimeVersion = appManifest.nodeWebkit.version;
+var runtimeVersion = devManifest.config.nodeWebkit.version;
 // The directory where runtime should be placed
 var destDir = projectRoot.dir('runtime/' + utils.os());
 
@@ -26,7 +26,7 @@ if (destDir.read('version') === runtimeVersion) {
 destDir.dir('.', { empty: true });
 
 // Figure out the URL we have to download.
-var url = devManifest.config.runtime.downloadUrls[utils.os()];
+var url = devManifest.config.nodeWebkit.downloadUrls[utils.os()];
 // URL has places where we have to inject version we are interested with.
 url = url.replace(/{{version}}/g, runtimeVersion);
 
@@ -45,7 +45,7 @@ downloader(url, downloadPath).then(function () {
     // so we know in the future what we downloaded.
     destDir.file('version', { content: runtimeVersion });
     
-    // For linux we need to apply the patch/hack for libudev.so.1
+    // For linux we need to apply the patch/hack for libudev
     if (utils.os() === 'linux') {
         require('./internal/patch_libudev');
     }

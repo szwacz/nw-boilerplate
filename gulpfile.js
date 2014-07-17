@@ -36,7 +36,7 @@ gulp.task('less', ['clean'], function () {
 gulp.task('copy', ['clean'] , function(callback) {
     src.copyAsync('node_modules', dest.path('node_modules'))
     .then(function () {
-        return src.copyAsync('index.html', dest.path('index.html'))
+        return src.copyAsync('index.html', dest.path('index.html'));
     })
     .then(function () {
         return src.readAsync('package.json', 'json');
@@ -55,6 +55,9 @@ gulp.task('copy', ['clean'] , function(callback) {
             manifest.name += '-dev';
         }
         return dest.writeAsync('package.json', manifest);
+    })
+    .then(function () {
+        return jetpack.copyAsync('./os/icon.png', dest.path('icon.png'));
     })
     .then(callback);
 });
