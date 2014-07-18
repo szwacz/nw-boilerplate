@@ -34,6 +34,6 @@
         "build": "node ./node_modules/gulp/bin/gulp build",
         "start": "node ./scripts/start",
         "test": "",
-        "package": ""
+        "package": "node ./scripts/package"
     }
 }

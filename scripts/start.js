@@ -12,5 +12,14 @@ switch (utils.os()) {
         process.exit();
         break;
     case 'windows':
+        childProcess.execFile('./build/nw.exe', function (error, stdout, stderr) {
+            if (error || stderr) {
+                console.log(error);
+                console.log(stderr);
+            } else {
+                console.log(stdout)
+            }
+        });
+        //process.exit();
         break;
 }

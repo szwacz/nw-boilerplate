@@ -64,7 +64,7 @@ gulp.task('copy', ['clean'] , function(callback) {
 
 gulp.task('copyRuntime', ['clean'] , function(callback) {
     var runtimeForThisOs = './runtime/' + utils.os();
-    jetpack.copyAsync(runtimeForThisOs, dest.path(), { overwrite: true, allBut: ['version', 'nwsnapshot', 'credits.html'] })
+    jetpack.copyAsync(runtimeForThisOs, dest.path(), { overwrite: true, allBut: ['version', 'nwsnapshot*', 'credits.html'] })
     .then(function () {
         callback();
     });
