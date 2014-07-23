@@ -12,6 +12,10 @@ var appManifest = projectRoot.read('app/package.json', 'json');
 var releases = projectRoot.dir('./releases');
 var tmp = projectRoot.dir('tmp', { empty: true });
 
+if (utils.os() === 'osx') {
+    
+}
+
 if (utils.os() === 'linux') {
     var packName = appManifest.name + '-' + appManifest.version;
     var pack = tmp.dir(packName);

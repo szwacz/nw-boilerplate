@@ -12,6 +12,13 @@ var terget = argv.target || "development"
 
 var src = jetpack.cwd('./app/');
 var dest = jetpack.cwd('./build/');
+var destForCode;
+if (utils.os() === 'osx') {
+    destForCode = jetpack.cwd('./build/node-webkit.app/Contents/Resources/app.nw');
+} else {
+    destForCode = dest;
+}
+
 
 gulp.task('clean', function(callback) {
     dest.dirAsync('.', { empty: true })
@@ -20,23 +27,31 @@ gulp.task('clean', function(callback) {
     });
 });
 
-gulp.task('browserify', ['clean'], function() {
+gulp.task('copyRuntime', ['clean'] , function(callback) {
+    var runtimeForThisOs = './runtime/' + utils.os();
+    jetpack.copyAsync(runtimeForThisOs, dest.path(), { overwrite: true, allBut: ['version', 'nwsnapshot*', 'credits.html'] })
+    .then(function () {
+        callback();
+    });
+});
+
+gulp.task('browserify', ['clean', 'copyRuntime'], function() {
     browserify(src.path('app.js'))
     .bundle()
     .pipe(source('bundle.js'))
-    .pipe(gulp.dest(dest.cwd()));
+    .pipe(gulp.dest(destForCode.path()));
 });
 
-gulp.task('less', ['clean'], function () {
+gulp.task('less', ['clean', 'copyRuntime'], function () {
     gulp.src(src.cwd() + '/stylesheets/**/*.less')
     .pipe(less())
-    .pipe(gulp.dest('./build/stylesheets'));
+    .pipe(gulp.dest(destForCode.path('stylesheets')));
 });
 
-gulp.task('copy', ['clean'] , function(callback) {
+gulp.task('copy', ['clean', 'copyRuntime'] , function(callback) {
     src.copyAsync('node_modules', dest.path('node_modules'))
     .then(function () {
-        return src.copyAsync('index.html', dest.path('index.html'));
+        return src.copyAsync('index.html', destForCode.path('index.html'));
     })
     .then(function () {
         return src.readAsync('package.json', 'json');
@@ -54,20 +69,12 @@ gulp.task('copy', ['clean'] , function(callback) {
             // interacting with each other).
             manifest.name += '-dev';
         }
-        return dest.writeAsync('package.json', manifest);
+        return destForCode.writeAsync('package.json', manifest, { jsonIndent: 4 });
     })
     .then(function () {
-        return jetpack.copyAsync('./os/icon.png', dest.path('icon.png'));
+        return jetpack.copyAsync('./os/icon.png', destForCode.path('icon.png'));
     })
     .then(callback);
 });
 
-gulp.task('copyRuntime', ['clean'] , function(callback) {
-    var runtimeForThisOs = './runtime/' + utils.os();
-    jetpack.copyAsync(runtimeForThisOs, dest.path(), { overwrite: true, allBut: ['version', 'nwsnapshot*', 'credits.html'] })
-    .then(function () {
-        callback();
-    });
-});
-
-gulp.task('build', ['clean', 'browserify', 'less', 'copy', 'copyRuntime']);
+gulp.task('build', ['clean', 'copyRuntime', 'browserify', 'less', 'copy']);
