@@ -1,0 +1,7 @@
+Package: {{name}}
+Version: {{version}}
+Section: base
+Priority: optional
+Architecture: amd64
+Maintainer: {{author}}
+Description: {{description}}

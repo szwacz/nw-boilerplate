@@ -1,7 +1,9 @@
 {
-    "name": "nw-boilerplate-app",
-    "prettyName": "Node-webkit Boilerplate App",
+    "name": "nw-boilerplate",
+    "prettyName": "Node-Webkit Boilerplate",
+    "description": "Scaffolding for node-webkit application, ready to use out of the box.",
     "version": "0.1.0",
+    "author": "Attila the Hun",
     "main": "index.html",
     "window": {
         "icon": "icon.png",
