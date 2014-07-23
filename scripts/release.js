@@ -28,7 +28,7 @@ if (utils.os() === 'linux') {
     });
     pack.write('usr/share/applications/' + appManifest.name + '.desktop', desktop);
     
-    var control = projectRoot.read('os/linux/control');
+    var control = projectRoot.read('os/linux/DEBIAN/control');
     control = utils.replace(control, {
         name: appManifest.name,
         description: appManifest.description,
