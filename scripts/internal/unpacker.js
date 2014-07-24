@@ -54,6 +54,7 @@ var untar = function(archivePath, destPath) {
 var unzip = function(archivePath, destPath) {
     var DecompressZip = require('decompress-zip');
     var deferred = Q.defer();
+    var files = [];
     
     new DecompressZip(archivePath)
     .on('error', function (err) {
@@ -61,8 +62,22 @@ var unzip = function(archivePath, destPath) {
         console.log(err);
         deferred.reject();
     })
-    .on('extract', deferred.resolve)
-    .extract({ path: destPath });
+    .on('extract', function () {
+        files.forEach(function(file) {
+            fs.chmodSync(pathUtil.join(destPath, file.path), file.mode);
+        });
+        deferred.resolve();
+    })
+    .extract({
+        path: destPath,
+        filter: function(entry) {
+            files.push({
+                path: entry.path,
+                mode: entry.mode.toString(8)
+            });
+            return true;
+        }
+    });
 
     return deferred.promise;
 }

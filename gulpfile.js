@@ -31,6 +31,16 @@ gulp.task('copyRuntime', ['clean'] , function(callback) {
     var runtimeForThisOs = './runtime/' + utils.os();
     jetpack.copyAsync(runtimeForThisOs, dest.path(), { overwrite: true, allBut: ['version', 'nwsnapshot*', 'credits.html'] })
     .then(function () {
+        if (utils.os() === 'osx') {
+            var manifest = jetpack.read('app/package.json', 'json')
+            var info = jetpack.read('os/osx/Info.plist')
+            info = utils.replace(info, {
+                name: manifest.prettyName,
+                version: manifest.version
+            })
+            dest.write('node-webkit.app/Contents/Info.plist', info)
+            jetpack.copy('os/osx/icon.icns', dest.path('node-webkit.app/Contents/Resources/icon.icns'));
+        }
         callback();
     });
 });
@@ -49,7 +59,7 @@ gulp.task('less', ['clean', 'copyRuntime'], function () {
 });
 
 gulp.task('copy', ['clean', 'copyRuntime'] , function(callback) {
-    src.copyAsync('node_modules', dest.path('node_modules'))
+    src.copyAsync('node_modules', destForCode.path('node_modules'))
     .then(function () {
         return src.copyAsync('index.html', destForCode.path('index.html'));
     })

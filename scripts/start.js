@@ -6,6 +6,15 @@ var utils = require('./internal/utils');
 
 switch (utils.os()) {
     case 'osx':
+        childProcess.exec('open ./build/node-webkit.app', function (error, stdout, stderr) {
+            if (error || stderr) {
+                console.log(error);
+                console.log(stderr);
+            } else {
+                console.log(stdout)
+            }
+        });
+        //process.exit();
         break;
     case 'linux':
         childProcess.spawn('./build/nw');

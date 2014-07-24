@@ -4,13 +4,11 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
-	<key>CFBundleDisplayName</key>
-	<string>{{prettyName}}</string>
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>
 			<key>CFBundleTypeIconFile</key>
-			<string>nw.icns</string>
+			<string>icon.icns</string>
 			<key>CFBundleTypeName</key>
 			<string>node-webkit App</string>
 			<key>CFBundleTypeRole</key>
