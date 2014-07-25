@@ -13,7 +13,19 @@ var releases = projectRoot.dir('./releases');
 var tmp = projectRoot.dir('tmp', { empty: true });
 
 if (utils.os() === 'osx') {
-    
+    var appdmg = require('appdmg');
+    var packName = appManifest.name + '-' + appManifest.version;
+    var dmgManifest = projectRoot.read('os/osx/appdmg.json');
+    dmgManifest = utils.replace(dmgManifest, {
+        prettyName: appManifest.prettyName,
+        appPath: projectRoot.path("build/node-webkit.app"),
+        dmgIcon: projectRoot.path("os/osx/dmg-icon.icns"),
+        dmgBackground: projectRoot.path("os/osx/dmg-background.png")
+    });
+    tmp.write('appdmg.json', dmgManifest);
+    appdmg(tmp.path('appdmg.json'), releases.path(packName + '.dmg'), function (err, path) {
+        console.log(err);
+    });
 }
 
 if (utils.os() === 'linux') {
