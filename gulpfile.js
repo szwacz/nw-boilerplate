@@ -1,14 +1,17 @@
+'use strict';
+
 var argv = require('yargs').argv;
 var gulp = require('gulp');
+var es6ModuleTranspiler = require("gulp-es6-module-transpiler");
 var less = require('gulp-less');
-var browserify = require('browserify');
 var jetpack = require('fs-jetpack');
-var source = require('vinyl-source-stream');
 
 var utils = require('./scripts/internal/utils');
 
-// Could be "development" or "release"
-var terget = argv.target || "development"
+// Could be "development", "spec" or "release"
+var target = argv.target || "development";
+
+console.log('target', target)
 
 var src = jetpack.cwd('./app/');
 var dest = jetpack.cwd('./build/');
@@ -21,13 +24,10 @@ if (utils.os() === 'osx') {
 
 
 gulp.task('clean', function(callback) {
-    dest.dirAsync('.', { empty: true })
-    .then(function () {
-        callback();
-    });
+    return dest.dirAsync('.', { empty: true });
 });
 
-gulp.task('copyRuntime', ['clean'] , function(callback) {
+gulp.task('copy:runtime', ['clean'] , function(callback) {
     var runtimeForThisOs = './runtime/' + utils.os();
     jetpack.copyAsync(runtimeForThisOs, dest.path(), { overwrite: true, allBut: ['version', 'nwsnapshot*', 'credits.html'] })
     .then(function () {
@@ -45,46 +45,68 @@ gulp.task('copyRuntime', ['clean'] , function(callback) {
     });
 });
 
-gulp.task('browserify', ['clean', 'copyRuntime'], function() {
-    browserify(src.path('app.js'))
-    .bundle()
-    .pipe(source('bundle.js'))
+gulp.task('transpile:app', function() {
+    return gulp.src(['app/**/*.js', '!app/node_modules/**', '!app/vendor/**', '!app/spec'])
+    .pipe(es6ModuleTranspiler({ type: "amd" }))
     .pipe(gulp.dest(destForCode.path()));
 });
 
-gulp.task('less', ['clean', 'copyRuntime'], function () {
-    gulp.src(src.cwd() + '/stylesheets/**/*.less')
+gulp.task('transpile:spec', function() {
+    return gulp.src(['spec/**/*.js', '!spec/runner/**'])
+    .pipe(es6ModuleTranspiler({ type: "amd" }))
+    .pipe(gulp.dest(destForCode.path()));
+});
+
+gulp.task('copy:spec', function(callback) {
+    return jetpack.copyAsync('spec', destForCode.path(), { overwrite: true, allBut: ['*.js'] });
+});
+
+gulp.task('less', function () {
+    return gulp.src('app/stylesheets/**/*.less')
     .pipe(less())
     .pipe(gulp.dest(destForCode.path('stylesheets')));
 });
 
-gulp.task('copy', ['clean', 'copyRuntime'] , function(callback) {
-    src.copyAsync('node_modules', destForCode.path('node_modules'))
-    .then(function () {
-        return src.copyAsync('index.html', destForCode.path('index.html'));
-    })
-    .then(function () {
-        return src.readAsync('package.json', 'json');
-    })
-    .then(function (manifest) {
-        if (terget === 'release') {
-            // Hide dev toolbar if doing a release.
-            manifest.window.toolbar = false;
-        } else {
-            // Show dev toolbar in development mode.
-            manifest.window.toolbar = true;
-            // Add "-dev" suffix to name, so the app will write all the
-            // node-webkit data into different directory than released
-            // app (so you can have both on the same machine not
-            // interacting with each other).
-            manifest.name += '-dev';
-        }
-        return destForCode.writeAsync('package.json', manifest, { jsonIndent: 4 });
-    })
-    .then(function () {
-        return jetpack.copyAsync('./os/icon.png', destForCode.path('icon.png'));
-    })
-    .then(callback);
+gulp.task('copy:app', function(callback) {
+    return jetpack.copyAsync('app', destForCode.path(), { overwrite: true, only: [
+        'app/node_modules',
+        'app/vendor',
+        'app/app.js',
+        'app/index.html'
+    ] });
 });
 
-gulp.task('build', ['clean', 'copyRuntime', 'browserify', 'less', 'copy']);
+gulp.task('transformFiles', function() {
+    var manifest = src.read('package.json', 'json');
+    switch (target) {
+        case 'release':
+            // Hide dev toolbar if doing a release.
+            manifest.window.toolbar = false;
+            break;
+        case 'test':
+            // Add "-test" suffix to name, so node-webkit will write all
+            // data like cookies and locaStorage into separate place.
+            manifest.name += '-test';
+            // Change the main entry to spec runner.
+            manifest.main = 'spec/runner/runner.html';
+            break;
+        case 'development':
+            // Add "-dev" suffix to name, so node-webkit will write all
+            // data like cookies and locaStorage into separate place.
+            manifest.name += '-dev';
+            break;
+    }
+    destForCode.write('package.json', manifest, { jsonIndent: 4 });
+});
+
+gulp.task('watch', function () {
+    gulp.watch('app/stylesheets/**', ['less']);
+    gulp.watch('app/**/*.js', ['transpile:app']);
+    gulp.watch('spec/**/*.js', ['transpile:spec']);
+});
+
+gulp.task('build:app', ['transpile:app', 'less', 'copy:app', 'transformFiles']);
+gulp.task('build:spec', ['transpile:spec', 'copy:spec']);
+gulp.task('build', ['clean', 'copy:runtime'], function () {
+    gulp.run(['build:spec', 'build:app']);
+});

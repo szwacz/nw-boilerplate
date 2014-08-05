@@ -4,11 +4,11 @@
     <meta charset="utf-8">
     <title>{{prettyName}}</title>
     <link href="./stylesheets/main.css" rel="stylesheet" type="text/css">
-    <script src="./app.js"></script>
+    <script src="vendor/require.js"></script>
+    <script>
+        requirejs(['app'], function (app) {});
+    </script>
 </head>
 <body>
-    
-    <p class="greet">Welcome to this awesome app!</p>
-    
 </body>
 </html>

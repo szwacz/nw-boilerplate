@@ -1,39 +1,43 @@
 {
-    "dependencies": {
-        "browserify": "4.x.x",
-        "gulp": "3.x.x",
-        "gulp-less": "1.x.x",
-        "vinyl-source-stream": "0.1.x",
-        "yargs": "1.2.x"
-    },
-    "devDependencies": {
-        "decompress-zip": "0.0.x",
-        "fs-jetpack": "0.4.x",
-        "request": "2.x.x",
-        "request-progress": "0.3.x",
-        "tar": "0.1.x",
-        "q": "1.x.x"
-    },
-    "optionalDependencies": {
-        "appdmg": "0.2.x"
-    },
-    "config": {
-        "nodeWebkit": {
-            "version": "0.9.2",
-            "downloadUrls":{
-                "osx": "http://dl.node-webkit.org/v{{version}}/node-webkit-v{{version}}-osx-ia32.zip",
-                "linux": "http://dl.node-webkit.org/v{{version}}/node-webkit-v{{version}}-linux-x64.tar.gz",
-                "windows": "http://dl.node-webkit.org/v{{version}}/node-webkit-v{{version}}-win-ia32.zip"
-            }
-        }
-    },
-    "scripts": {
-        "download-runtime": "node ./scripts/download",
-        "app-npm-install": "cd ./app && npm install",
-        "postinstall": "npm run download-runtime && npm run app-npm-install",
-        "build": "node ./node_modules/gulp/bin/gulp build",
-        "start": "node ./scripts/start",
-        "test": "",
-        "release": "node ./scripts/release"
+  "dependencies": {
+    "gulp": "3.x.x",
+    "gulp-es6-module-transpiler": "0.1.x",
+    "gulp-less": "1.x.x",
+    "yargs": "1.2.x"
+  },
+  "devDependencies": {
+    "decompress-zip": "0.0.x",
+    "fs-jetpack": "0.4.x",
+    "q": "1.x.x",
+    "request": "2.x.x",
+    "request-progress": "0.3.x",
+    "tar": "0.1.x"
+  },
+  "optionalDependencies": {
+    "appdmg": "0.2.x"
+  },
+  "config": {
+    "nodeWebkit": {
+      "version": "0.10.1",
+      "downloadUrls": {
+        "osx": "http://dl.node-webkit.org/v{{version}}/node-webkit-v{{version}}-osx-ia32.zip",
+        "linux": "http://dl.node-webkit.org/v{{version}}/node-webkit-v{{version}}-linux-x64.tar.gz",
+        "windows": "http://dl.node-webkit.org/v{{version}}/node-webkit-v{{version}}-win-ia32.zip"
+      }
     }
+  },
+  "scripts": {
+    "download-runtime": "node ./scripts/download",
+    "app-npm-install": "cd ./app  &&  npm install",
+    "postinstall": "npm run download-runtime   &&   npm run app-npm-install",
+    
+    "build": "node ./node_modules/gulp/bin/gulp build --development",
+    "build-test": "node ./node_modules/gulp/bin/gulp build --test",
+    "build-release": "node ./node_modules/gulp/bin/gulp build --release",
+    "watch": "node ./node_modules/gulp/bin/gulp watch",
+    
+    "start": "npm run build  &&  node ./scripts/start",
+    "test": " npm run build-test  &&  node ./scripts/start",
+    "release": "npm run build-release  &&  node ./scripts/release"
+  }
 }

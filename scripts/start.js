@@ -1,34 +1,28 @@
+// Starts the app in /build folder
+
 'use strict';
 
 var childProcess = require('child_process');
-
 var utils = require('./internal/utils');
 
-switch (utils.os()) {
-    case 'osx':
-        childProcess.exec('open ./build/node-webkit.app', function (error, stdout, stderr) {
-            if (error || stderr) {
-                console.log(error);
-                console.log(stderr);
-            } else {
-                console.log(stdout)
-            }
-        });
-        //process.exit();
-        break;
-    case 'linux':
-        childProcess.spawn('./build/nw');
-        process.exit();
-        break;
-    case 'windows':
-        childProcess.execFile('./build/nw.exe', function (error, stdout, stderr) {
-            if (error || stderr) {
-                console.log(error);
-                console.log(stderr);
-            } else {
-                console.log(stdout)
-            }
-        });
-        //process.exit();
-        break;
-}
+// First start the gulp watch
+
+var watch = childProcess.spawn('node', ['./node_modules/gulp/bin/gulp', 'watch', '--color']);
+watch.stdout.pipe(process.stdin);
+watch.stderr.pipe(process.stderr);
+
+// Then start the app
+
+var commands = {
+    'osx': 'open ./build/node-webkit.app',
+    'linux': './build/nw',
+    'windows': './build/nw.exe'
+};
+
+var app = childProcess.spawn(commands[utils.os()]);
+app.stdout.pipe(process.stdin);
+app.stderr.pipe(process.stderr);
+app.on('close', function (code) {
+    // Kill watch process when application closes.
+    watch.kill();
+});
