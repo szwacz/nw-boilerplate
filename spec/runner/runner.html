@@ -6,7 +6,7 @@
     
     <link rel="stylesheet" type="text/css" href="jasmine/jasmine.css">
     
-    <script src="../../vendor/require.js"></script>
+    <script src="../vendor/require.js"></script>
     <script src="jasmine/jasmine.js"></script>
     <script src="jasmine/jasmine-html.js"></script>
     <!--
@@ -31,6 +31,9 @@
         var fs = require('fs');
         var specPaths = [];
         
+        // Directories with those names will be rejected from search.
+        var blacklisted = ['node_modules'];
+        
         var parseDir = function (path) {
             var files = fs.readdirSync(path);
             files.forEach(function (filename) {
@@ -40,17 +43,17 @@
                     specPaths.push(moduleName);
                 } else {
                     var stat = fs.statSync(childPath);
-                    if (stat.isDirectory()) {
+                    if (stat.isDirectory() && blacklisted.indexOf(filename) === -1) {
                         parseDir(childPath);
                     }
                 }
             });
         };
         
-        parseDir('spec');
+        parseDir('.');
         
         requirejs.config({
-            baseUrl: '../../' // Base URL set to app directory.
+            baseUrl: '../' // Base URL set to app directory.
         });
         
         requirejs(specPaths, function () {

@@ -1,4 +1,4 @@
-// Starts the app in /build folder
+// Starts the app in /build folder and fires gulp watch while the app is opened.
 
 'use strict';
 

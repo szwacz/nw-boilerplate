@@ -8,40 +8,32 @@ var jetpack = require('fs-jetpack');
 
 var utils = require('./scripts/internal/utils');
 
-// Could be "development", "spec" or "release"
-var target = argv.target || "development";
-
-console.log('target', target)
+// Figure out target for this build...
+var target = "development";
+if (argv.test) {
+    target = "test";
+} else if (argv.release) {
+    target = "release";
+}
 
 var src = jetpack.cwd('./app/');
 var dest = jetpack.cwd('./build/');
 var destForCode;
 if (utils.os() === 'osx') {
-    destForCode = jetpack.cwd('./build/node-webkit.app/Contents/Resources/app.nw');
+    destForCode = dest.cwd('./node-webkit.app/Contents/Resources/app.nw');
 } else {
     destForCode = dest;
 }
-
 
 gulp.task('clean', function(callback) {
     return dest.dirAsync('.', { empty: true });
 });
 
-gulp.task('copy:runtime', ['clean'] , function(callback) {
+gulp.task('copy:runtime', ['clean'] , function() {
     var runtimeForThisOs = './runtime/' + utils.os();
-    jetpack.copyAsync(runtimeForThisOs, dest.path(), { overwrite: true, allBut: ['version', 'nwsnapshot*', 'credits.html'] })
-    .then(function () {
-        if (utils.os() === 'osx') {
-            var manifest = jetpack.read('app/package.json', 'json')
-            var info = jetpack.read('os/osx/Info.plist')
-            info = utils.replace(info, {
-                name: manifest.prettyName,
-                version: manifest.version
-            })
-            dest.write('node-webkit.app/Contents/Info.plist', info)
-            jetpack.copy('os/osx/icon.icns', dest.path('node-webkit.app/Contents/Resources/icon.icns'));
-        }
-        callback();
+    return jetpack.copyAsync(runtimeForThisOs, dest.path(), {
+        overwrite: true,
+        allBut: ['version', 'nwsnapshot*', 'credits.html']
     });
 });
 
@@ -57,8 +49,8 @@ gulp.task('transpile:spec', function() {
     .pipe(gulp.dest(destForCode.path()));
 });
 
-gulp.task('copy:spec', function(callback) {
-    return jetpack.copyAsync('spec', destForCode.path(), { overwrite: true, allBut: ['*.js'] });
+gulp.task('copy:spec', function() {
+    return jetpack.copyAsync('spec', destForCode.path(), { overwrite: true, only: ['spec/runner'] });
 });
 
 gulp.task('less', function () {
@@ -67,16 +59,15 @@ gulp.task('less', function () {
     .pipe(gulp.dest(destForCode.path('stylesheets')));
 });
 
-gulp.task('copy:app', function(callback) {
+gulp.task('copy:app', function() {
     return jetpack.copyAsync('app', destForCode.path(), { overwrite: true, only: [
         'app/node_modules',
         'app/vendor',
-        'app/app.js',
         'app/index.html'
     ] });
 });
 
-gulp.task('transformFiles', function() {
+gulp.task('finalize', function() {
     var manifest = src.read('package.json', 'json');
     switch (target) {
         case 'release':
@@ -88,7 +79,7 @@ gulp.task('transformFiles', function() {
             // data like cookies and locaStorage into separate place.
             manifest.name += '-test';
             // Change the main entry to spec runner.
-            manifest.main = 'spec/runner/runner.html';
+            manifest.main = 'runner/runner.html';
             break;
         case 'development':
             // Add "-dev" suffix to name, so node-webkit will write all
@@ -97,6 +88,21 @@ gulp.task('transformFiles', function() {
             break;
     }
     destForCode.write('package.json', manifest, { jsonIndent: 4 });
+    
+    // For OSX we have to add few extra files for all this to work.
+    if (utils.os() === 'osx') {
+        // Info.plist
+        var manifest = jetpack.read('app/package.json', 'json');
+        var info = jetpack.read('os/osx/Info.plist');
+        info = utils.replace(info, {
+            name: manifest.prettyName,
+            version: manifest.version
+        });
+        dest.write('node-webkit.app/Contents/Info.plist', info);
+        
+        // icon
+        jetpack.copy('os/osx/icon.icns', dest.path('node-webkit.app/Contents/Resources/icon.icns'));
+    }
 });
 
 gulp.task('watch', function () {
@@ -105,8 +111,13 @@ gulp.task('watch', function () {
     gulp.watch('spec/**/*.js', ['transpile:spec']);
 });
 
-gulp.task('build:app', ['transpile:app', 'less', 'copy:app', 'transformFiles']);
+gulp.task('build:app', ['transpile:app', 'copy:app', 'less', 'finalize']);
 gulp.task('build:spec', ['transpile:spec', 'copy:spec']);
-gulp.task('build', ['clean', 'copy:runtime'], function () {
-    gulp.run(['build:spec', 'build:app']);
+
+gulp.task('default', ['clean', 'copy:runtime'], function () {
+    if (target === 'release') {
+        gulp.run(['build:app']); // Exclude specs from release build
+    } else {
+        gulp.run(['build:spec', 'build:app']);
+    }
 });

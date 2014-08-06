@@ -31,11 +31,12 @@
     "app-npm-install": "cd ./app  &&  npm install",
     "postinstall": "npm run download-runtime   &&   npm run app-npm-install",
     
-    "build": "node ./node_modules/gulp/bin/gulp build --development",
-    "build-test": "node ./node_modules/gulp/bin/gulp build --test",
-    "build-release": "node ./node_modules/gulp/bin/gulp build --release",
+    "build": "node ./node_modules/gulp/bin/gulp --development",
+    "build-test": "node ./node_modules/gulp/bin/gulp --test",
+    "build-release": "node ./node_modules/gulp/bin/gulp --release",
     "watch": "node ./node_modules/gulp/bin/gulp watch",
     
+    "app": "node ./scripts/start",
     "start": "npm run build  &&  node ./scripts/start",
     "test": " npm run build-test  &&  node ./scripts/start",
     "release": "npm run build-release  &&  node ./scripts/release"
