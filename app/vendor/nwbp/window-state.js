@@ -7,10 +7,20 @@
     var state;
     var currMode = 'normal';
     var maximizationJustHappened = false;
+    var saveTimeout;
     
     var init = function () {
         try {
             state = JSON.parse(localStorage.windowState);
+            
+            // Make sure the window is in-bounds of the screen.
+            if (state.x < 0 ||
+                state.y < 0 ||
+                state.width > screen.width ||
+                state.height > screen.height) {
+                throw "Window out of bounds.";
+            }
+            
             // Restore saved window state.
             currMode = state.mode;
             win.resizeTo(state.width, state.height);
@@ -25,7 +35,7 @@
             }
         } catch (err) {
             // There was no data, or data has been corrupted.
-            // Start from scratch.
+            // Start from scratch with safe defaults.
             state = {
                 mode: currMode,
                 x: win.x,
@@ -38,88 +48,67 @@
         win.show();
     };
     
-    var onEvent = function (eventName) {
-        console.log('onEvent', eventName)
-        switch (eventName) {
-            case 'maximize':
-                maximizationJustHappened = true;
-                setTimeout(function () {
-                    // Switch it back after 0.5 sec.
-                    maximizationJustHappened = false;
-                }, 500);
-                currMode = 'maximized';
-                state.mode = currMode;
-                save();
-                break;
-            case 'unmaximize':
-                currMode = 'normal';
-                state.mode = currMode;
-                save();
-                break;
-            case 'minimize':
-                currMode = 'minimized';
-                // Don't save minimized state (it makes no sense),
-                // leave in storage the last normal or maximized state.
-                break;
-            case 'unminimize':
-                currMode = 'normal';
-                state.mode = currMode;
-                save();
-                break;
-            case 'resize':
-                if (!maximizationJustHappened && currMode === 'maximized') {
-                    // On OSX you can resize maximized window, so it is no longer maximized.
-                    currMode = 'normal';
-                }
-                if (currMode === 'normal') {
-                    // Save new dimensions only if normal state,
-                    // in other states they have no meaning to us.
-                    state.width = win.width;
-                    state.height = win.height;
-                    save();
-                }
-                break;
-            case 'move':
-                if (currMode === 'normal') {
-                    // Save new dimensions only if normal state,
-                    // in other states they have no meaning to us.
-                    state.x = win.x;
-                    state.y = win.y;
-                    save();
-                }
-                break;
-        }
+    // We are delaying save for one second to be sure window state
+    // has "stabilized" (order of events is sometimes unreliable,
+    // and we can save some junk otherwise).
+    var scheduleSave = function () {
+        clearTimeout(saveTimeout);
+        saveTimeout = setTimeout(save, 1000);
     };
     
     var save = function () {
+        if (currMode === 'minimized') {
+            // Don't save minimized state.
+            return;
+        }
+        if (currMode === 'normal') {
+            // Update window dimensions only if in normal mode.
+            state.x = win.x;
+            state.y = win.y;
+            state.width = win.width;
+            state.height = win.height;
+        }
+        state.mode = currMode;
         localStorage.windowState = JSON.stringify(state);
-        console.log("saved:", JSON.stringify(state));
     }; 
     
     init();
     
     win.on('maximize', function () {
-        onEvent('maximize');
+        maximizationJustHappened = true;
+        setTimeout(function () {
+            // Switch it back after 0.5 sec.
+            maximizationJustHappened = false;
+        }, 500);
+        currMode = 'maximized';
+        scheduleSave();
     });
     
     win.on('unmaximize', function () {
-        onEvent('unmaximize');
+        currMode = 'normal';
+        scheduleSave();
     });
     
     win.on('minimize', function () {
-        onEvent('minimize');
+        currMode = 'minimized';
+        // Don't save minimized state.
     });
     
     win.on('restore', function () {
-        onEvent('unminimize');
+        currMode = 'normal';
+        scheduleSave();
     });
     
     win.on('resize', function () {
-        onEvent('resize');
+        if (!maximizationJustHappened && currMode === 'maximized') {
+            // On OSX you can resize maximized window, so it is no longer maximized.
+            currMode = 'normal';
+        }
+        scheduleSave();
     });
     
     win.on('move', function () {
-        onEvent('move');
+        scheduleSave();
     });
     
 }());
