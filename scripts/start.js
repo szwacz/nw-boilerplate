@@ -8,7 +8,7 @@ var utils = require('./internal/utils');
 // First start the gulp watch
 
 var watch = childProcess.spawn('node', ['./node_modules/gulp/bin/gulp', 'watch', '--color']);
-watch.stdout.pipe(process.stdin);
+watch.stdout.pipe(process.stdout);
 watch.stderr.pipe(process.stderr);
 
 // Then start the app
@@ -20,7 +20,7 @@ var commands = {
 };
 
 var app = childProcess.spawn(commands[utils.os()]);
-app.stdout.pipe(process.stdin);
+app.stdout.pipe(process.stdout);
 app.stderr.pipe(process.stderr);
 app.on('close', function (code) {
     // Kill watch process when application closes.
