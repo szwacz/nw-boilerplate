@@ -1,8 +1,10 @@
 'use strict';
 
 var Q = require('q');
+var childProcess = require('child_process');
 var fs = require('fs');
 var pathUtil = require('path');
+var DecompressZip = require('decompress-zip');
 var utils = require('./utils');
 
 // Detects archive type just by examining file extension.
@@ -21,7 +23,6 @@ var untar = function(archivePath, destPath) {
     
     if (utils.os() === 'linux') {
         // On linux use super fast untar provided by the system.
-        var childProcess = require('child_process');
         var command = "tar -zxf " + archivePath + " --strip-components=1 -C " + destPath;
         childProcess.exec(command, function (error, stdout, stderr) {
             if (error || stderr) {
@@ -34,27 +35,14 @@ var untar = function(archivePath, destPath) {
             }
         });
     } else {
-        // On other operating systems use JS implementation (very slow for now).
-        var gunzip = require('zlib').createGunzip();
-        var tar = require('tar');
-        fs.createReadStream(archivePath)
-        .pipe(gunzip)
-        .pipe(tar.Extract({ path: destPath }))
-        .on("error", function (err) {
-            console.log('ERROR while unpacking tar:');
-            console.log(err);
-            deferred.reject();
-        })
-        .on("end", deferred.resolve);
+        throw "TAR decompression supported only on linux.";
     }
 
     return deferred.promise;
 };
 
 var unzip = function(archivePath, destPath) {
-    var DecompressZip = require('decompress-zip');
     var deferred = Q.defer();
-    var files = [];
     
     new DecompressZip(archivePath)
     .on('error', function (err) {
@@ -62,21 +50,10 @@ var unzip = function(archivePath, destPath) {
         console.log(err);
         deferred.reject();
     })
-    .on('extract', function () {
-        files.forEach(function(file) {
-            fs.chmodSync(pathUtil.join(destPath, file.path), file.mode);
-        });
-        deferred.resolve();
-    })
+    .on('extract', deferred.resolve)
     .extract({
         path: destPath,
-        filter: function(entry) {
-            files.push({
-                path: entry.path,
-                mode: entry.mode.toString(8)
-            });
-            return true;
-        }
+        strip: 1
     });
 
     return deferred.promise;

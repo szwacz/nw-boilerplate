@@ -10,8 +10,7 @@
     "fs-jetpack": "0.4.x",
     "q": "1.x.x",
     "request": "2.x.x",
-    "request-progress": "0.3.x",
-    "tar": "0.1.x"
+    "request-progress": "0.3.x"
   },
   "optionalDependencies": {
     "appdmg": "0.2.x"
