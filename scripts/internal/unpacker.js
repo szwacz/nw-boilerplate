@@ -1,9 +1,8 @@
 'use strict';
 
 var Q = require('q');
-var childProcess = require('child_process');
-var fs = require('fs');
 var pathUtil = require('path');
+var childProcess = require('child_process');
 var DecompressZip = require('decompress-zip');
 var utils = require('./utils');
 
