@@ -1,16 +1,14 @@
 {
-  "dependencies": {
-    "gulp": "3.x.x",
-    "gulp-es6-module-transpiler": "0.1.x",
-    "gulp-less": "1.x.x",
-    "yargs": "1.2.x"
-  },
   "devDependencies": {
     "decompress-zip": "git://github.com/szwacz/decompress-zip.git",
     "fs-jetpack": "0.4.x",
+    "gulp": "3.x.x",
+    "gulp-es6-module-transpiler": "0.1.x",
+    "gulp-less": "1.x.x",
     "q": "1.x.x",
     "request": "2.x.x",
-    "request-progress": "0.3.x"
+    "request-progress": "0.3.x",
+    "yargs": "1.2.x"
   },
   "optionalDependencies": {
     "appdmg": "0.2.x"
@@ -28,14 +26,13 @@
   "scripts": {
     "download-runtime": "node ./scripts/download",
     "app-npm-install": "cd ./app  &&  npm install",
-    "postinstall": "npm run download-runtime   &&   npm run app-npm-install",
+    "postinstall": "npm run download-runtime  &&  npm run app-npm-install",
     
-    "build": "node ./node_modules/gulp/bin/gulp --development",
-    "build-test": "node ./node_modules/gulp/bin/gulp --test",
-    "build-release": "node ./node_modules/gulp/bin/gulp --release",
-    "watch": "node ./node_modules/gulp/bin/gulp watch",
+    "build": "node ./node_modules/.bin/gulp --development",
+    "build-test": "node ./node_modules/.bin/gulp --test",
+    "build-release": "node ./node_modules/.bin/gulp --release",
+    "watch": "node ./node_modules/.bin/gulp watch",
     
-    "app": "node ./scripts/start",
     "start": "npm run build  &&  node ./scripts/start",
     "test": " npm run build-test  &&  node ./scripts/start",
     "release": "npm run build-release  &&  node ./scripts/release"
