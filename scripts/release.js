@@ -10,25 +10,30 @@ var devManifest = projectRoot.read('package.json', 'json');
 var appManifest = projectRoot.read('app/package.json', 'json');
 
 var releases = projectRoot.dir('./releases');
-var tmp = projectRoot.dir('tmp', { empty: true });
+var tmp = projectRoot.dir('./tmp', { empty: true });
 
-if (utils.os() === 'osx') {
-    var appdmg = require('appdmg');
-    var packName = appManifest.name + '-' + appManifest.version;
-    var dmgManifest = projectRoot.read('os/osx/appdmg.json');
-    dmgManifest = utils.replace(dmgManifest, {
-        prettyName: appManifest.prettyName,
-        appPath: projectRoot.path("build/node-webkit.app"),
-        dmgIcon: projectRoot.path("os/osx/dmg-icon.icns"),
-        dmgBackground: projectRoot.path("os/osx/dmg-background.png")
+var forWindows = function () {
+    var filename = appManifest.name + '-' + appManifest.version + '.exe';
+    var installScript = projectRoot.read('./os/windows/installer.nsi');
+    installScript = utils.replace(installScript, {
+        "name": appManifest.name,
+        "prettyName": appManifest.prettyName,
+        "src": "..\\build",
+        "dest": "..\\releases\\" + filename,
+        "icon": "..\\os\\windows\\icon.ico"
     });
-    tmp.write('appdmg.json', dmgManifest);
-    appdmg(tmp.path('appdmg.json'), releases.path(packName + '.dmg'), function (err, path) {
-        console.log(err);
-    });
-}
+    projectRoot.write('./tmp/installer.nsi', installScript);
+    
+    console.log('Starting NSIS...');
+    
+    // Note: NSIS have to be added to PATH!
+    var nsis = childProcess.spawn('makensis', ['.\\tmp\\installer.nsi']);
+    nsis.stdout.pipe(process.stdout);
+    nsis.stderr.pipe(process.stderr);
+    nsis.on('close', cleanAfter);
+};
 
-if (utils.os() === 'linux') {
+var forLinux = function () {
     var packName = appManifest.name + '-' + appManifest.version;
     var pack = tmp.dir(packName);
     
@@ -61,26 +66,31 @@ if (utils.os() === 'linux') {
             console.log(stdout)
         }
     });
-}
+};
 
-if (utils.os() === 'windows') {
-    var filename = utils.replace("{{app_name}}-v{{version}}.exe", {
-        "app_name": appManifest.name,
-        "version": appManifest.version
+var forOsx = function () {
+    var appdmg = require('appdmg');
+    var packName = appManifest.name + '-' + appManifest.version;
+    var dmgManifest = projectRoot.read('os/osx/appdmg.json');
+    dmgManifest = utils.replace(dmgManifest, {
+        prettyName: appManifest.prettyName,
+        appPath: projectRoot.path("build/node-webkit.app"),
+        dmgIcon: projectRoot.path("os/osx/dmg-icon.icns"),
+        dmgBackground: projectRoot.path("os/osx/dmg-background.png")
     });
-    var installScript = projectRoot.read('./os/windows/installer.nsi');
-    installScript = utils.replace(installScript, {
-        "src_dir": ".",
-        "dest_file": "..\\releases\\" + filename
+    tmp.write('appdmg.json', dmgManifest);
+    appdmg(tmp.path('appdmg.json'), releases.path(packName + '.dmg'), function (err, path) {
+        console.log(err);
     });
-    projectRoot.write('./build/installer.nsi', installScript);
-    // NSIS have to be added to PATH at this moment for this to work
-    childProcess.exec('makensis ./build/installer.nsi', function (error, stdout, stderr) {
-        if (error || stderr) {
-            console.log(error);
-            console.log(stderr);
-        } else {
-            console.log(stdout)
-        }
-    });
-}
+};
+
+var cleanAfter = function () {
+    tmp.remove('.');
+};
+
+var doRelease = {
+    'windows': forWindows,
+    'linux': forLinux,
+    'osx': forOsx
+};
+doRelease[utils.os()]();

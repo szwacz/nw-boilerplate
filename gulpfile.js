@@ -89,19 +89,24 @@ gulp.task('finalize', function() {
     }
     destForCode.write('package.json', manifest, { jsonIndent: 4 });
     
-    // For OSX we have to add few extra files for all this to work.
-    if (utils.os() === 'osx') {
-        // Info.plist
-        var manifest = jetpack.read('app/package.json', 'json');
-        var info = jetpack.read('os/osx/Info.plist');
-        info = utils.replace(info, {
-            name: manifest.prettyName,
-            version: manifest.version
-        });
-        dest.write('node-webkit.app/Contents/Info.plist', info);
-        
-        // icon
-        jetpack.copy('os/osx/icon.icns', dest.path('node-webkit.app/Contents/Resources/icon.icns'));
+    // Stuff specyfic for every OS
+    switch (utils.os()) {
+        case 'windows':
+            // icon
+            jetpack.copy('os/windows/icon.ico', dest.path('icon.ico'));
+            break;
+        case 'osx':
+            // Info.plist
+            var manifest = jetpack.read('app/package.json', 'json');
+            var info = jetpack.read('os/osx/Info.plist');
+            info = utils.replace(info, {
+                name: manifest.prettyName,
+                version: manifest.version
+            });
+            dest.write('node-webkit.app/Contents/Info.plist', info);
+            // icon
+            jetpack.copy('os/osx/icon.icns', dest.path('node-webkit.app/Contents/Resources/icon.icns'));
+            break;
     }
 });
 
