@@ -1,6 +1,8 @@
 ; NSIS packaging/install script
 ; Docs: http://nsis.sourceforge.net/Docs/Contents.html
 
+!include "nsDialogs.nsh"
+
 ; --------------------------------
 ; Variables
 ; --------------------------------
@@ -9,7 +11,10 @@
 !define src "{{src}}"
 !define name "{{name}}"
 !define prettyName "{{prettyName}}"
+!define version "{{version}}"
 !define icon "{{icon}}"
+!define setupIcon "{{setupIcon}}"
+!define banner "{{banner}}"
 
 !define exec "nw.exe"
 
@@ -22,29 +27,60 @@
 ; Installation
 ; --------------------------------
 
-SetCompressor lzma
-
-XPStyle on
-ShowInstDetails nevershow
-AutoCloseWindow false
+;SetCompressor lzma
 
 Name "${name}"
-Icon "${icon}"
+Icon "${setupIcon}"
 OutFile "${dest}"
+InstallDir "$PROGRAMFILES\${name}"
+InstallDirRegKey HKLM "${regkey}" ""
 
 CRCCheck on
 SilentInstall normal
 
-InstallDir "$PROGRAMFILES\${name}"
-InstallDirRegKey HKLM "${regkey}" ""
+XPStyle on
+ShowInstDetails nevershow
+AutoCloseWindow false
+WindowIcon off
 
 Caption "${prettyName} Setup"
 ; Don't add sub-captions to title bar
 SubCaption 3 " "
 SubCaption 4 " "
 
+Page custom welcome
 Page instfiles
 
+Var Image
+Var ImageHandle
+
+Function .onInit
+
+    ; Extract banner image for welcome page
+    InitPluginsDir
+    ReserveFile "${banner}"
+    File /oname=$PLUGINSDIR\banner.bmp "${banner}"
+
+FunctionEnd
+
+; Custom welcome page
+Function welcome
+
+    nsDialogs::Create 1018
+    
+    ${NSD_CreateLabel} 0 1u 210 100% "Welcome to ${prettyName} version ${version} installer.$\r$\n$\r$\nClick install button to begin."
+    
+    ${NSD_CreateBitmap} 228 0 170 210 ""
+    Pop $Image
+    ${NSD_SetImage} $Image $PLUGINSDIR\banner.bmp $ImageHandle
+
+    nsDialogs::Show
+
+    ${NSD_FreeImage} $ImageHandle
+
+FunctionEnd
+
+; Installation declarations
 Section "Install"
     
     WriteRegStr HKLM "${regkey}" "Install_Dir" "$INSTDIR"
@@ -84,6 +120,6 @@ Section "Uninstall"
     
     Delete "$SMPROGRAMS\${name}.lnk"
     
-    Delete "$INSTDIR"
+    RMDir /r "$INSTDIR"
     
 SectionEnd

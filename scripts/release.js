@@ -18,9 +18,12 @@ var forWindows = function () {
     installScript = utils.replace(installScript, {
         "name": appManifest.name,
         "prettyName": appManifest.prettyName,
+        "version": appManifest.version,
         "src": "..\\build",
         "dest": "..\\releases\\" + filename,
-        "icon": "..\\os\\windows\\icon.ico"
+        "icon": "..\\os\\windows\\icon.ico",
+        "setupIcon": "..\\os\\windows\\setup-icon.ico",
+        "banner": "..\\os\\windows\\setup-banner.bmp"
     });
     projectRoot.write('./tmp/installer.nsi', installScript);
     
