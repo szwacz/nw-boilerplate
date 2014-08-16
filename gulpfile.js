@@ -89,7 +89,9 @@ gulp.task('finalize', function() {
     }
     destForCode.write('package.json', manifest, { jsonIndent: 4 });
     
-    // Stuff specyfic for every OS
+    jetpack.copy('os/icon.png', destForCode.path('icon.png'));
+    
+    // Stuff specyfic for certains OS
     switch (utils.os()) {
         case 'windows':
             // icon
