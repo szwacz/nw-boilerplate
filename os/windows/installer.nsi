@@ -1,7 +1,8 @@
 ; NSIS packaging/install script
 ; Docs: http://nsis.sourceforge.net/Docs/Contents.html
 
-!include "nsDialogs.nsh"
+!include LogicLib.nsh
+!include nsDialogs.nsh
 
 ; --------------------------------
 ; Variables
@@ -87,6 +88,9 @@ Section "Install"
     WriteRegStr HKLM "${uninstkey}" "DisplayName" "${name}"
     WriteRegStr HKLM "${uninstkey}" "DisplayIcon" '"$INSTDIR\icon.ico"'
     WriteRegStr HKLM "${uninstkey}" "UninstallString" '"$INSTDIR\${uninstaller}"'
+    
+    ; Remove all application files copied by previous installation
+    RMDir /r "$INSTDIR"
     
     SetOutPath $INSTDIR
     
