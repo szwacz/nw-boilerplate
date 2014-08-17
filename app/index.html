@@ -16,9 +16,15 @@
     
     <script>
         (function () {
-            // Get name of the app from package.json and set it as title.
             var gui = require('nw.gui');
+            
+            // Get name of the app from package.json and set it as title.
             document.title = gui.App.manifest.prettyName;
+            
+            // Create default menu items for OSX
+            var mb = new gui.Menu({ type: "menubar" });
+            mb.createMacBuiltin(gui.App.manifest.prettyName);
+            gui.Window.get().menu = mb;
         }());
     </script>
 </head>
