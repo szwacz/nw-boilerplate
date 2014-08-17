@@ -102,7 +102,7 @@ gulp.task('finalize', function() {
             var manifest = jetpack.read('app/package.json', 'json');
             var info = jetpack.read('os/osx/Info.plist');
             info = utils.replace(info, {
-                name: manifest.prettyName,
+                prettyName: manifest.prettyName,
                 version: manifest.version
             });
             dest.write('node-webkit.app/Contents/Info.plist', info);

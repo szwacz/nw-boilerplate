@@ -73,17 +73,30 @@ var forLinux = function () {
 
 var forOsx = function () {
     var appdmg = require('appdmg');
-    var packName = appManifest.name + '-' + appManifest.version;
+    var dmgName = appManifest.name + '-' + appManifest.version + '.dmg';
+    
+    // Change app bundle name to desired
+    projectRoot.rename("build/node-webkit.app", appManifest.prettyName + ".app");
+    
+    // Prepare appdmg config
     var dmgManifest = projectRoot.read('os/osx/appdmg.json');
     dmgManifest = utils.replace(dmgManifest, {
         prettyName: appManifest.prettyName,
-        appPath: projectRoot.path("build/node-webkit.app"),
+        appPath: projectRoot.path("build/" + appManifest.prettyName + ".app"),
         dmgIcon: projectRoot.path("os/osx/dmg-icon.icns"),
         dmgBackground: projectRoot.path("os/osx/dmg-background.png")
     });
     tmp.write('appdmg.json', dmgManifest);
-    appdmg(tmp.path('appdmg.json'), releases.path(packName + '.dmg'), function (err, path) {
-        console.log(err);
+    
+    // Delete dmg with this name if already exists
+    releases.file(dmgName, { exists: false });
+    
+    console.log('Packaging to DMG image...');
+    
+    appdmg(tmp.path('appdmg.json'), releases.path(dmgName), function (err, path) {
+        cleanAfter();
+        console.log('Done!');
+        console.log('Packaged to: ' + path);
     });
 };
 
