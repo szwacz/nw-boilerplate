@@ -29,6 +29,7 @@
                 // Have to delay maximization a little to let NW set
                 // the normal x,y,width,height of the window,
                 // so we can unmaximize to that state later on.
+                // It also prevents bug https://github.com/rogerwang/node-webkit/issues/1105
                 setTimeout(function () {
                     win.maximize();
                 }, 100);
