@@ -1,9 +1,9 @@
 {
     "name": "nw-boilerplate",
     "prettyName": "Node-Webkit Boilerplate",
-    "description": "Scaffolding for node-webkit application, ready to use out of the box.",
+    "description": "Scaffolding for node-webkit application. Out of the box ready for serious stuff.",
     "version": "0.1.0",
-    "author": "Attila the Hun",
+    "author": "Mr Gumby <gumby@sillywalks.com>",
     "main": "index.html",
     "window": {
         "icon": "icon.png",
@@ -16,6 +16,6 @@
         "position": "center"
     },
     "dependencies": {
-        "fs-jetpack": "0.4.x"
+        
     }
 }

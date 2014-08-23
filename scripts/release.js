@@ -40,6 +40,8 @@ var forLinux = function () {
     var packName = appManifest.name + '-' + appManifest.version;
     var pack = tmp.dir(packName);
     
+    console.log('Creating DEB package...');
+    
     projectRoot.copy('build', pack.path('opt', appManifest.name));
     
     var desktop = projectRoot.read('os/linux/app.desktop');
@@ -52,22 +54,25 @@ var forLinux = function () {
     });
     pack.write('usr/share/applications/' + appManifest.name + '.desktop', desktop);
     
+    // Counting size of the app in KB
+    var appSize = Math.round(projectRoot.tree('build').size / 1024);
+    
     var control = projectRoot.read('os/linux/DEBIAN/control');
     control = utils.replace(control, {
         name: appManifest.name,
         description: appManifest.description,
         version: appManifest.version,
-        author: appManifest.author
+        author: appManifest.author,
+        size: appSize
     });
     pack.write('DEBIAN/control', control);
     
-    childProcess.exec('dpkg-deb --build ' + pack.path() + ' ' + releases.path(packName + '.deb'), function (error, stdout, stderr) {
-        if (error || stderr) {
-            console.log(error);
-            console.log(stderr);
-        } else {
-            console.log(stdout)
-        }
+    var deb = childProcess.spawn('fakeroot', ['dpkg-deb', '--build', pack.path(), releases.path(packName + '.deb')]);
+    deb.stdout.pipe(process.stdout);
+    deb.stderr.pipe(process.stderr);
+    deb.on('close', function () {
+        cleanAfter();
+        console.log('Done!');
     });
 };
 

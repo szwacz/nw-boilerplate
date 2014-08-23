@@ -3,6 +3,7 @@
 'use strict';
 
 var pathUtil = require('path');
+var childProcess = require('child_process');
 var projectRoot = require('fs-jetpack').cwd(pathUtil.resolve(__dirname, '..'));
 
 var utils = require('./internal/utils');
@@ -41,12 +42,32 @@ downloader(url, downloadPath).then(function () {
 })
 .then(function () {
     tmpDir.remove('.');
+    
     // Place file with version next to downloaded runtime,
     // so we know in the future what we downloaded.
     destDir.file('version', { content: runtimeVersion });
     
-    // For linux we need to apply the patch/hack for libudev
+    // Special preparations necessary for linux runtime
     if (utils.os() === 'linux') {
-        require('./internal/patch_libudev');
+        // The hack for problems with libudev.so.0 on Linux platform.
+        // Read more: https://github.com/rogerwang/node-webkit/wiki/The-solution-of-lacking-libudev.so.0
+        childProcess.exec("sed -i 's/udev\.so\.0/udev.so.1/g' nw", { cwd: destDir.path() }, function (error, stdout, stderr) {
+            if (error || stderr) {
+                console.log('ERROR while patching libudev:');
+                console.log(error);
+                console.log(stderr);
+            } else {
+                // Next make sure all files has broad read permission...
+                childProcess.exec("chmod -R a+r .", { cwd: destDir.path() }, function (error, stdout, stderr) {
+                    if (error || stderr) {
+                        console.log(error);
+                        console.log(stderr);
+                    } else {
+                        // ...and finally that main file has broad execution premission.
+                        destDir.file('nw', { mode: '755' });
+                    }
+                });
+            }
+        });
     }
 });
