@@ -6,7 +6,7 @@
     var win = gui.Window.get();
     var state;
     var currMode = 'normal';
-    var maximizationJustHappened = false;
+    var maximized = null;
     var saveTimeout;
     
     var init = function () {
@@ -14,10 +14,11 @@
             state = JSON.parse(localStorage.windowState);
             
             // Make sure the window is in-bounds of the screen.
-            if (state.x < 0 ||
-                state.y < 0 ||
-                state.width > screen.width ||
-                state.height > screen.height) {
+            // If not, it is safer to ignore it.
+            if (state.x < -10 ||
+                state.y < -10 ||
+                state.x + state.width > screen.width + 10 ||
+                state.y + state.height > screen.height + 10) {
                 throw "Window out of bounds.";
             }
             
@@ -51,23 +52,30 @@
     
     // We are delaying save for one second to be sure window state
     // has "stabilized" (order of events is sometimes unreliable,
-    // and we can save some junk otherwise).
+    // and we can save some junk by not waiting).
     var scheduleSave = function () {
         clearTimeout(saveTimeout);
         saveTimeout = setTimeout(save, 1000);
     };
     
+    var snapshotWindowSize = function (obj) {
+        obj.x = win.x;
+        obj.y = win.y;
+        obj.width = win.width;
+        obj.height = win.height;
+    }
+    
     var save = function () {
         if (currMode === 'minimized') {
-            // Don't save minimized state.
+            // Save maximized dimensions into separate object for future use.
+            maximized = {};
+            snapshotWindowSize(maximized);
+            // Don't save minimized state into main storage.
             return;
         }
         if (currMode === 'normal') {
             // Update window dimensions only if in normal mode.
-            state.x = win.x;
-            state.y = win.y;
-            state.width = win.width;
-            state.height = win.height;
+            snapshotWindowSize(state);
         }
         state.mode = currMode;
         localStorage.windowState = JSON.stringify(state);
@@ -76,11 +84,6 @@
     init();
     
     win.on('maximize', function () {
-        maximizationJustHappened = true;
-        setTimeout(function () {
-            // Switch it back after 0.5 sec.
-            maximizationJustHappened = false;
-        }, 500);
         currMode = 'maximized';
         scheduleSave();
     });
@@ -101,8 +104,9 @@
     });
     
     win.on('resize', function () {
-        if (!maximizationJustHappened && currMode === 'maximized') {
+        if (maximized && (win.width !== maximized.width || win.height !== maximized.height)) {
             // On OSX you can resize maximized window, so it is no longer maximized.
+            maximized = null;
             currMode = 'normal';
         }
         scheduleSave();
