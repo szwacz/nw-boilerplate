@@ -22,9 +22,11 @@
             document.title = gui.App.manifest.prettyName;
             
             // Create default menu items for OSX
-            var mb = new gui.Menu({ type: "menubar" });
-            mb.createMacBuiltin(gui.App.manifest.prettyName);
-            gui.Window.get().menu = mb;
+            if (process.platform === 'darwin') {
+                var mb = new gui.Menu({ type: "menubar" });
+                mb.createMacBuiltin(gui.App.manifest.prettyName);
+                gui.Window.get().menu = mb;
+            }
         }());
     </script>
 </head>
