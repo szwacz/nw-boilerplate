@@ -12,8 +12,16 @@ var appManifest = projectRoot.read('app/package.json', 'json');
 var releases = projectRoot.dir('./releases');
 var tmp = projectRoot.dir('./tmp', { empty: true });
 
+var cleanAfter = function () {
+    tmp.remove('.');
+};
+
+// -------------------------------------
+// Windows
+// -------------------------------------
+
 var forWindows = function () {
-    var filename = appManifest.name + '-' + appManifest.version + '.exe';
+    var filename = appManifest.name + '_' + appManifest.version + '.exe';
     var installScript = projectRoot.read('./os/windows/installer.nsi');
     installScript = utils.replace(installScript, {
         "name": appManifest.name,
@@ -36,14 +44,21 @@ var forWindows = function () {
     nsis.on('close', cleanAfter);
 };
 
+// -------------------------------------
+// Linux
+// -------------------------------------
+
 var forLinux = function () {
-    var packName = appManifest.name + '-' + appManifest.version;
+    var packName = appManifest.name + '_' + appManifest.version;
     var pack = tmp.dir(packName);
+    var debFileName = packName + '_amd64.deb';
     
     console.log('Creating DEB package...');
     
+    // The whole app will be installed into /opt directory
     projectRoot.copy('build', pack.path('opt', appManifest.name));
     
+    // Create .desktop file from the template
     var desktop = projectRoot.read('os/linux/app.desktop');
     desktop = utils.replace(desktop, {
         name: appManifest.name,
@@ -57,6 +72,7 @@ var forLinux = function () {
     // Counting size of the app in KB
     var appSize = Math.round(projectRoot.tree('build').size / 1024);
     
+    // Preparing debian control file
     var control = projectRoot.read('os/linux/DEBIAN/control');
     control = utils.replace(control, {
         name: appManifest.name,
@@ -67,18 +83,27 @@ var forLinux = function () {
     });
     pack.write('DEBIAN/control', control);
     
-    var deb = childProcess.spawn('fakeroot', ['dpkg-deb', '--build', pack.path(), releases.path(packName + '.deb')]);
-    deb.stdout.pipe(process.stdout);
-    deb.stderr.pipe(process.stderr);
-    deb.on('close', function () {
-        cleanAfter();
-        console.log('Done!');
-    });
+    // Build the package...
+    childProcess.exec('fakeroot dpkg-deb -Zxz --build ' + pack.path() + ' ' + releases.path(debFileName),
+        function (error, stdout, stderr) {
+            if (error || stderr) {
+                console.log("ERROR while building DEB package:");
+                console.log(error);
+                console.log(stderr);
+            } else {
+                console.log('Package ' + debFileName + ' ready!');
+            }
+            cleanAfter();
+        });
 };
+
+// -------------------------------------
+// OSX
+// -------------------------------------
 
 var forOsx = function () {
     var appdmg = require('appdmg');
-    var dmgName = appManifest.name + '-' + appManifest.version + '.dmg';
+    var dmgName = appManifest.name + '_' + appManifest.version + '.dmg';
     
     // Change app bundle name to desired
     projectRoot.rename("build/node-webkit.app", appManifest.prettyName + ".app");
@@ -105,9 +130,9 @@ var forOsx = function () {
     });
 };
 
-var cleanAfter = function () {
-    tmp.remove('.');
-};
+// -------------------------------------
+// Let's get started...
+// -------------------------------------
 
 var doRelease = {
     'windows': forWindows,
