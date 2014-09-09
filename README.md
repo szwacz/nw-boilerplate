@@ -5,9 +5,10 @@ It's just a bunch of scripts, so you can change/extend/delete every part you don
 
 # What it can do?
 
+- Supports all 3 operating systems supported by node-webkit.
 - Lets you start developing node-webkit app just by typing 3 commands in terminal.
 - Has preconfigured, full blown development environment.
-- Spits out installers for all 3 operating systems supported by node-webkit.
+- Spits out ready for distribution installers for every operating system.
 
 
 # Quick start
