@@ -19,9 +19,8 @@ The only development dependency of this project is Node.js. So just make sure yo
 2. Install dependencies with `npm install` (it will also download node-webkit runtime).
 3. Run `npm start` to launch the application.
 
-# In more details...
 
-## Structure of this project
+# Structure of the project
 
 There are two `package.json` files:  
 
@@ -47,6 +46,7 @@ You declare here which version of node-webkit you want to use and the URLs from 
 Placed in **app** directory. This is real manifest of your application, as specified by [NW wiki](https://github.com/rogerwang/node-webkit/wiki/Manifest-format).
 
 ### Project's folders
+
 - `app` - here is all code of your application.
 - `build` - in this folder lands built, runnable application.
 - `os` - application files specyfic for particular operating system.
@@ -65,7 +65,7 @@ TODO
 
 There are various icon and bitmap files in `os` directory. They are used in installers. Replace them with your own of the same size and file type (if bmp is used, it has to be bmp format).
 
-For release use command:
+To make a release use command:
 ```
 npm run release
 ```
