@@ -1,10 +1,12 @@
 'use strict';
 
 var argv = require('yargs').argv;
-var gulp = require('gulp');
-var es6ModuleTranspiler = require("gulp-es6-module-transpiler");
-var less = require('gulp-less');
 var jetpack = require('fs-jetpack');
+var gulp = require('gulp');
+var less = require('gulp-less');
+var through = require('through2');
+var transpiler = require('es6-module-transpiler');
+var AmdFormatter = require('es6-module-transpiler-amd-formatter');
 
 var utils = require('./scripts/internal/utils');
 
@@ -29,42 +31,53 @@ gulp.task('clean', function(callback) {
     return dest.dirAsync('.', { empty: true });
 });
 
-gulp.task('copy:runtime', ['clean'] , function() {
+gulp.task('prepareRuntime', ['clean'] , function() {
     var runtimeForThisOs = './runtime/' + utils.os();
     return jetpack.copyAsync(runtimeForThisOs, dest.path(), {
         overwrite: true,
-        allBut: ['version', 'nwsnapshot*', 'credits.html']
+        allBut: [
+            'version',
+            'nwsnapshot*',
+            'credits.html'
+        ]
     });
 });
 
-gulp.task('transpile:app', function() {
-    return gulp.src(['app/**/*.js', '!app/node_modules/**', '!app/vendor/**', '!app/spec'])
-    .pipe(es6ModuleTranspiler({ type: "amd" }))
-    .pipe(gulp.dest(destForCode.path()));
+gulp.task('copy', function() {
+    return jetpack.copyAsync('app', destForCode.path(), {
+        overwrite: true,
+        only: [
+            'app/node_modules',
+            'app/vendor',
+            '*.html'
+        ]
+    });
 });
 
-gulp.task('transpile:spec', function() {
-    return gulp.src(['spec/**/*.js', '!spec/runner/**'])
-    .pipe(es6ModuleTranspiler({ type: "amd" }))
-    .pipe(gulp.dest(destForCode.path()));
-});
-
-gulp.task('copy:spec', function() {
-    return jetpack.copyAsync('spec', destForCode.path(), { overwrite: true, only: ['spec/runner'] });
+gulp.task('transpile', function() {
+    return gulp.src([
+        'app/**/*.js',
+        '!app/node_modules/**',
+        '!app/vendor/**'
+    ], {
+        read: false // Don't read the files. ES6 transpiler will do it.
+    })
+    .pipe(through.obj(function (file, enc, callback) {
+        var relPath = file.path.substring(file.base.length); // 
+        var container = new transpiler.Container({
+            resolvers: [new transpiler.FileResolver([file.base])],
+            formatter: new AmdFormatter()
+        });
+        container.getModule(relPath);
+        container.write(destForCode.path(relPath));
+        callback();
+    }));
 });
 
 gulp.task('less', function () {
     return gulp.src('app/stylesheets/**/*.less')
     .pipe(less())
     .pipe(gulp.dest(destForCode.path('stylesheets')));
-});
-
-gulp.task('copy:app', function() {
-    return jetpack.copyAsync('app', destForCode.path(), { overwrite: true, only: [
-        'app/node_modules',
-        'app/vendor',
-        'app/index.html'
-    ] });
 });
 
 gulp.task('finalize', function() {
@@ -79,7 +92,7 @@ gulp.task('finalize', function() {
             // data like cookies and locaStorage into separate place.
             manifest.name += '-test';
             // Change the main entry to spec runner.
-            manifest.main = 'runner/runner.html';
+            manifest.main = 'spec.html';
             break;
         case 'development':
             // Add "-dev" suffix to name, so node-webkit will write all
@@ -114,17 +127,11 @@ gulp.task('finalize', function() {
 
 gulp.task('watch', function () {
     gulp.watch('app/stylesheets/**', ['less']);
-    gulp.watch('app/**/*.js', ['transpile:app']);
-    gulp.watch('spec/**/*.js', ['transpile:spec']);
+    gulp.watch('app/**/*.js', ['transpile']);
 });
 
-gulp.task('build:app', ['transpile:app', 'copy:app', 'less', 'finalize']);
-gulp.task('build:spec', ['transpile:spec', 'copy:spec']);
+gulp.task('build', ['copy', 'transpile', 'less', 'finalize']);
 
-gulp.task('default', ['clean', 'copy:runtime'], function () {
-    if (target === 'release') {
-        gulp.run(['build:app']); // Exclude specs from release build
-    } else {
-        gulp.run(['build:spec', 'build:app']);
-    }
+gulp.task('default', ['prepareRuntime'], function () {
+    gulp.run('build');
 });

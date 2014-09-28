@@ -4,19 +4,17 @@
     <meta charset="utf-8">
     <title>Jasmine Spec Runner</title>
     
-    <link rel="stylesheet" type="text/css" href="jasmine/jasmine.css">
+    <link rel="stylesheet" type="text/css" href="vendor/jasmine/jasmine.css">
     
-    <script src="../vendor/require.js"></script>
-    <script src="jasmine/jasmine.js"></script>
-    <script src="jasmine/jasmine-html.js"></script>
+    <script src="vendor/jasmine/jasmine.js"></script>
+    <script src="vendor/jasmine/jasmine-html.js"></script>
     <!--
         Note: boot.js file was sligltly modified to work with AMD modules.
-        It by default starts with window.onload, what is not good for us, because
-        then none of AMD modules are loaded yet. So the method is just renamed
-        to window.startJasmine, and called manually after requirejs finished
-        loadig all the stuff.
+        The default behaviour of starting with window.onload was changed
+        to start when function window.startJasmine is called.
     -->
-    <script src="jasmine/boot.js"></script>
+    <script src="vendor/jasmine/boot.js"></script>
+    <script src="vendor/require.js"></script>
     
     <script>
         
@@ -52,11 +50,9 @@
         
         parseDir('.');
         
-        requirejs.config({
-            baseUrl: '../' // Base URL set to app directory.
-        });
-        
+        requirejs.config({ baseUrl: '.' });
         requirejs(specPaths, function () {
+            // Start the tests after all modules has been loaded.
             window.startJasmine();
         });
         

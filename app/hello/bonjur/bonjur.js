@@ -1,6 +1,6 @@
 var greet = function () {
-    return 'Hello World!';
-}
+    return 'Bonjur!';
+};
 
 export default {
     greet: greet

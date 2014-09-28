@@ -1,17 +1,19 @@
 {
   "devDependencies": {
     "decompress-zip": "0.0.8",
-    "fs-jetpack": "0.5.x",
-    "gulp": "3.x.x",
-    "gulp-es6-module-transpiler": "0.1.x",
-    "gulp-less": "1.x.x",
-    "q": "1.x.x",
-    "request": "2.x.x",
-    "request-progress": "0.3.x",
-    "yargs": "1.2.x"
+    "es6-module-transpiler": "^0.6.2",
+    "es6-module-transpiler-amd-formatter": "^0.1.0",
+    "fs-jetpack": "^0.5.2",
+    "gulp": "^3.8.8",
+    "gulp-less": "^1.3.6",
+    "q": "^1.0.1",
+    "request": "^2.44.0",
+    "request-progress": "^0.3.1",
+    "through2": "^0.6.2",
+    "yargs": "^1.3.1"
   },
   "optionalDependencies": {
-    "appdmg": "0.2.x"
+    "appdmg": "^0.2.2"
   },
   "config": {
     "nodeWebkit": {
@@ -27,12 +29,10 @@
     "download-nw": "node ./scripts/download-nw",
     "app-npm-install": "cd ./app  &&  npm install",
     "postinstall": "npm run download-nw  &&  npm run app-npm-install",
-    
     "build": "./node_modules/.bin/gulp --development",
     "build-test": "./node_modules/.bin/gulp --test",
     "build-release": "./node_modules/.bin/gulp --release",
     "watch": "./node_modules/.bin/gulp watch",
-    
     "start": "npm run build  &&  node ./scripts/start",
     "test": " npm run build-test  &&  node ./scripts/start",
     "release": "npm run build-release  &&  node ./scripts/release"

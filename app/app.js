@@ -1,11 +1,12 @@
 // Browser modules are required through new ES6 syntax.
-import helloWorld from 'helpers/hello_world';
+import { greet } from './hello/hello_world';
+import bonjur from './hello/bonjur/bonjur';
 
 // Node modules are required the same way as always.
 var os = require('os');
 
 var tag = document.createElement('p');
-tag.innerHTML = helloWorld.greet();
+tag.innerHTML = greet();
 document.body.appendChild(tag);
 
 tag = document.createElement('p');
