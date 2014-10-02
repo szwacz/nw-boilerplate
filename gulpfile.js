@@ -68,9 +68,13 @@ gulp.task('transpile', function() {
             resolvers: [new transpiler.FileResolver([file.base])],
             formatter: new AmdFormatter()
         });
-        container.getModule(relPath);
-        container.write(destForCode.path(relPath));
-        callback();
+        try {
+            container.getModule(relPath);
+            container.write(destForCode.path(relPath));
+            callback();
+        } catch (err) {
+            callback(relPath + " " + err.message);
+        }
     }));
 });
 
