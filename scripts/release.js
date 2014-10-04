@@ -70,7 +70,7 @@ var forLinux = function () {
     pack.write('usr/share/applications/' + appManifest.name + '.desktop', desktop);
     
     // Counting size of the app in KB
-    var appSize = Math.round(projectRoot.tree('build').size / 1024);
+    var appSize = Math.round(projectRoot.inspectTree('build').size / 1024);
     
     // Preparing debian control file
     var control = projectRoot.read('os/linux/DEBIAN/control');
