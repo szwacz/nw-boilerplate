@@ -29,12 +29,9 @@
     "download-nw": "node ./scripts/download-nw",
     "app-npm-install": "cd ./app  &&  npm install",
     "postinstall": "npm run download-nw  &&  npm run app-npm-install",
-    "build": "./node_modules/.bin/gulp --development",
-    "build-test": "./node_modules/.bin/gulp --test",
-    "build-release": "./node_modules/.bin/gulp --release",
-    "watch": "./node_modules/.bin/gulp watch",
-    "start": "npm run build  &&  node ./scripts/start",
-    "test": " npm run build-test  &&  node ./scripts/start",
-    "release": "npm run build-release  &&  node ./scripts/release"
+    "build": "./node_modules/.bin/gulp build",
+    "start": "node ./scripts/start",
+    "test": " node ./scripts/start --target=test",
+    "release": "node ./scripts/release"
   }
 }

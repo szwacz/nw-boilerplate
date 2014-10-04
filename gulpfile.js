@@ -7,33 +7,26 @@ var less = require('gulp-less');
 var through = require('through2');
 var transpiler = require('es6-module-transpiler');
 var AmdFormatter = require('es6-module-transpiler-amd-formatter');
-
 var utils = require('./scripts/internal/utils');
 
-// Figure out target for this build...
-var target = "development";
-if (argv.test) {
-    target = "test";
-} else if (argv.release) {
-    target = "release";
-}
+var target = argv.target || 'development';
 
-var src = jetpack.cwd('./app/');
-var dest = jetpack.cwd('./build/');
-var destForCode;
+var srcDir = jetpack.cwd('./app/');
+var destDir = jetpack.cwd('./build/');
+var destForCodeDir;
 if (utils.os() === 'osx') {
-    destForCode = dest.cwd('./node-webkit.app/Contents/Resources/app.nw');
+    destForCodeDir = destDir.cwd('./node-webkit.app/Contents/Resources/app.nw');
 } else {
-    destForCode = dest;
+    destForCodeDir = destDir;
 }
 
 gulp.task('clean', function(callback) {
-    return dest.dirAsync('.', { empty: true });
+    return destDir.dirAsync('.', { empty: true });
 });
 
 gulp.task('prepareRuntime', ['clean'] , function() {
     var runtimeForThisOs = './runtime/' + utils.os();
-    return jetpack.copyAsync(runtimeForThisOs, dest.path(), {
+    return jetpack.copyAsync(runtimeForThisOs, destDir.path(), {
         overwrite: true,
         allBut: [
             'version',
@@ -43,8 +36,8 @@ gulp.task('prepareRuntime', ['clean'] , function() {
     });
 });
 
-gulp.task('copy', function() {
-    return jetpack.copyAsync('app', destForCode.path(), {
+gulp.task('copy', ['prepareRuntime'], function() {
+    return jetpack.copyAsync('app', destForCodeDir.path(), {
         overwrite: true,
         only: [
             'app/node_modules',
@@ -54,7 +47,7 @@ gulp.task('copy', function() {
     });
 });
 
-gulp.task('transpile', function() {
+gulp.task('transpile', ['prepareRuntime'], function() {
     return gulp.src([
         'app/**/*.js',
         '!app/node_modules/**',
@@ -63,29 +56,30 @@ gulp.task('transpile', function() {
         read: false // Don't read the files. ES6 transpiler will do it.
     })
     .pipe(through.obj(function (file, enc, callback) {
-        var relPath = file.path.substring(file.base.length); // 
+        var relPath = file.path.substring(file.base.length);
         var container = new transpiler.Container({
             resolvers: [new transpiler.FileResolver([file.base])],
             formatter: new AmdFormatter()
         });
         try {
             container.getModule(relPath);
-            container.write(destForCode.path(relPath));
+            container.write(destForCodeDir.path(relPath));
             callback();
         } catch (err) {
+            // Show to the user precise file where transpilation error occured.
             callback(relPath + " " + err.message);
         }
     }));
 });
 
-gulp.task('less', function () {
+gulp.task('less', ['prepareRuntime'], function () {
     return gulp.src('app/stylesheets/main.less')
     .pipe(less())
-    .pipe(gulp.dest(destForCode.path('stylesheets')));
+    .pipe(gulp.dest(destForCodeDir.path('stylesheets')));
 });
 
-gulp.task('finalize', function() {
-    var manifest = src.read('package.json', 'json');
+gulp.task('finalize', ['prepareRuntime'], function() {
+    var manifest = srcDir.read('package.json', 'json');
     switch (target) {
         case 'release':
             // Hide dev toolbar if doing a release.
@@ -104,15 +98,15 @@ gulp.task('finalize', function() {
             manifest.name += '-dev';
             break;
     }
-    destForCode.write('package.json', manifest, { jsonIndent: 4 });
+    destForCodeDir.write('package.json', manifest, { jsonIndent: 4 });
     
-    jetpack.copy('os/icon.png', destForCode.path('icon.png'));
+    jetpack.copy('os/icon.png', destForCodeDir.path('icon.png'));
     
     // Stuff specyfic for certains OS
     switch (utils.os()) {
         case 'windows':
             // icon
-            jetpack.copy('os/windows/icon.ico', dest.path('icon.ico'));
+            jetpack.copy('os/windows/icon.ico', destDir.path('icon.ico'));
             break;
         case 'osx':
             // Info.plist
@@ -124,7 +118,7 @@ gulp.task('finalize', function() {
             });
             dest.write('node-webkit.app/Contents/Info.plist', info);
             // icon
-            jetpack.copy('os/osx/icon.icns', dest.path('node-webkit.app/Contents/Resources/icon.icns'));
+            jetpack.copy('os/osx/icon.icns', destDir.path('node-webkit.app/Contents/Resources/icon.icns'));
             break;
     }
 });
@@ -136,6 +130,4 @@ gulp.task('watch', function () {
 
 gulp.task('build', ['copy', 'transpile', 'less', 'finalize']);
 
-gulp.task('default', ['prepareRuntime'], function () {
-    gulp.run('build');
-});
+gulp.task('default', ['watch', 'build']);
