@@ -1,7 +1,7 @@
 'use strict';
 
 var argv = require('yargs').argv;
-var jetpack = require('fs-jetpack');
+var projectDir = require('fs-jetpack');
 var gulp = require('gulp');
 var less = require('gulp-less');
 var through = require('through2');
@@ -11,8 +11,8 @@ var utils = require('./scripts/internal/utils');
 
 var target = argv.target || 'development';
 
-var srcDir = jetpack.cwd('./app/');
-var destDir = jetpack.cwd('./build/');
+var srcDir = projectDir.cwd('./app/');
+var destDir = projectDir.cwd('./build/');
 var destForCodeDir;
 if (utils.os() === 'osx') {
     destForCodeDir = destDir.cwd('./node-webkit.app/Contents/Resources/app.nw');
@@ -26,7 +26,7 @@ gulp.task('clean', function(callback) {
 
 gulp.task('prepareRuntime', ['clean'] , function() {
     var runtimeForThisOs = './runtime/' + utils.os();
-    return jetpack.copyAsync(runtimeForThisOs, destDir.path(), {
+    return projectDir.copyAsync(runtimeForThisOs, destDir.path(), {
         overwrite: true,
         allBut: [
             'version',
@@ -37,7 +37,7 @@ gulp.task('prepareRuntime', ['clean'] , function() {
 });
 
 gulp.task('copy', ['prepareRuntime'], function() {
-    return jetpack.copyAsync('app', destForCodeDir.path(), {
+    return projectDir.copyAsync('app', destForCodeDir.path(), {
         overwrite: true,
         only: [
             'app/node_modules',
@@ -100,25 +100,25 @@ gulp.task('finalize', ['prepareRuntime'], function() {
     }
     destForCodeDir.write('package.json', manifest, { jsonIndent: 4 });
     
-    jetpack.copy('os/icon.png', destForCodeDir.path('icon.png'));
+    projectDir.copy('os/icon.png', destForCodeDir.path('icon.png'));
     
     // Stuff specyfic for certains OS
     switch (utils.os()) {
         case 'windows':
             // icon
-            jetpack.copy('os/windows/icon.ico', destDir.path('icon.ico'));
+            projectDir.copy('os/windows/icon.ico', destDir.path('icon.ico'));
             break;
         case 'osx':
             // Info.plist
-            var manifest = jetpack.read('app/package.json', 'json');
-            var info = jetpack.read('os/osx/Info.plist');
+            var manifest = projectDir.read('app/package.json', 'json');
+            var info = projectDir.read('os/osx/Info.plist');
             info = utils.replace(info, {
                 prettyName: manifest.prettyName,
                 version: manifest.version
             });
             dest.write('node-webkit.app/Contents/Info.plist', info);
             // icon
-            jetpack.copy('os/osx/icon.icns', destDir.path('node-webkit.app/Contents/Resources/icon.icns'));
+            projectDir.copy('os/osx/icon.icns', destDir.path('node-webkit.app/Contents/Resources/icon.icns'));
             break;
     }
 });

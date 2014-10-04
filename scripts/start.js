@@ -14,7 +14,7 @@ gulp.stdout.pipe(process.stdout);
 gulp.stderr.pipe(process.stderr);
 
 gulp.stdout.on('data', function (data) {
-    // Look for info that gulp has finished building the app to start it.
+    // Look for the info that gulp has finished building the app to start it.
     var msg = data.toString();
     if (msg.indexOf("Finished") > -1 && msg.indexOf("build") > -1) {
         startApp();

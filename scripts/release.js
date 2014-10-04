@@ -2,18 +2,32 @@
 
 var pathUtil = require('path');
 var childProcess = require('child_process');
-var projectRoot = require('fs-jetpack').cwd(pathUtil.resolve(__dirname, '..'));
+var projectDir = require('fs-jetpack').cwd(__dirname, '..');
 
 var utils = require('./internal/utils');
 
-var devManifest = projectRoot.read('package.json', 'json');
-var appManifest = projectRoot.read('app/package.json', 'json');
+var devManifest = projectDir.read('package.json', 'json');
+var appManifest = projectDir.read('app/package.json', 'json');
 
-var releases = projectRoot.dir('./releases');
-var tmp = projectRoot.dir('./tmp', { empty: true });
+var releases = projectDir.dir('./releases');
+var tmpDir = projectDir.dir('./tmp', { empty: true });
 
 var cleanAfter = function () {
-    tmp.remove('.');
+    tmpDir.remove('.');
+};
+
+var build = function (callback) {
+    var gulp = childProcess.spawn('node', ['./node_modules/gulp/bin/gulp', 'build', '--color', '--target=release']);
+    gulp.stdout.pipe(process.stdout);
+    gulp.stderr.pipe(process.stderr);
+    
+    gulp.stdout.on('data', function (data) {
+        // Look for the info that gulp has finished building so we can carry on.
+        var msg = data.toString();
+        if (msg.indexOf("Finished") > -1 && msg.indexOf("build") > -1) {
+            callback();
+        }
+    });
 };
 
 // -------------------------------------
@@ -22,7 +36,7 @@ var cleanAfter = function () {
 
 var forWindows = function () {
     var filename = appManifest.name + '_' + appManifest.version + '.exe';
-    var installScript = projectRoot.read('./os/windows/installer.nsi');
+    var installScript = projectDir.read('./os/windows/installer.nsi');
     installScript = utils.replace(installScript, {
         "name": appManifest.name,
         "prettyName": appManifest.prettyName,
@@ -33,7 +47,7 @@ var forWindows = function () {
         "setupIcon": "..\\os\\windows\\setup-icon.ico",
         "banner": "..\\os\\windows\\setup-banner.bmp"
     });
-    projectRoot.write('./tmp/installer.nsi', installScript);
+    projectDir.write('./tmp/installer.nsi', installScript);
     
     console.log('Starting NSIS...');
     
@@ -50,16 +64,16 @@ var forWindows = function () {
 
 var forLinux = function () {
     var packName = appManifest.name + '_' + appManifest.version;
-    var pack = tmp.dir(packName);
+    var pack = tmpDir.dir(packName);
     var debFileName = packName + '_amd64.deb';
     
     console.log('Creating DEB package...');
     
     // The whole app will be installed into /opt directory
-    projectRoot.copy('build', pack.path('opt', appManifest.name));
+    projectDir.copy('build', pack.path('opt', appManifest.name));
     
     // Create .desktop file from the template
-    var desktop = projectRoot.read('os/linux/app.desktop');
+    var desktop = projectDir.read('os/linux/app.desktop');
     desktop = utils.replace(desktop, {
         name: appManifest.name,
         prettyName: appManifest.prettyName,
@@ -70,10 +84,10 @@ var forLinux = function () {
     pack.write('usr/share/applications/' + appManifest.name + '.desktop', desktop);
     
     // Counting size of the app in KB
-    var appSize = Math.round(projectRoot.inspectTree('build').size / 1024);
+    var appSize = Math.round(projectDir.inspectTree('build').size / 1024);
     
     // Preparing debian control file
-    var control = projectRoot.read('os/linux/DEBIAN/control');
+    var control = projectDir.read('os/linux/DEBIAN/control');
     control = utils.replace(control, {
         name: appManifest.name,
         description: appManifest.description,
@@ -106,24 +120,24 @@ var forOsx = function () {
     var dmgName = appManifest.name + '_' + appManifest.version + '.dmg';
     
     // Change app bundle name to desired
-    projectRoot.rename("build/node-webkit.app", appManifest.prettyName + ".app");
+    projectDir.rename("build/node-webkit.app", appManifest.prettyName + ".app");
     
     // Prepare appdmg config
-    var dmgManifest = projectRoot.read('os/osx/appdmg.json');
+    var dmgManifest = projectDir.read('os/osx/appdmg.json');
     dmgManifest = utils.replace(dmgManifest, {
         prettyName: appManifest.prettyName,
-        appPath: projectRoot.path("build/" + appManifest.prettyName + ".app"),
-        dmgIcon: projectRoot.path("os/osx/dmg-icon.icns"),
-        dmgBackground: projectRoot.path("os/osx/dmg-background.png")
+        appPath: projectDir.path("build/" + appManifest.prettyName + ".app"),
+        dmgIcon: projectDir.path("os/osx/dmg-icon.icns"),
+        dmgBackground: projectDir.path("os/osx/dmg-background.png")
     });
-    tmp.write('appdmg.json', dmgManifest);
+    tmpDir.write('appdmg.json', dmgManifest);
     
     // Delete dmg with this name if already exists
     releases.file(dmgName, { exists: false });
     
     console.log('Packaging to DMG image...');
     
-    appdmg(tmp.path('appdmg.json'), releases.path(dmgName), function (err, path) {
+    appdmg(tmpDir.path('appdmg.json'), releases.path(dmgName), function (err, path) {
         cleanAfter();
         console.log('Done!');
         console.log('Packaged to: ' + path);
@@ -134,9 +148,11 @@ var forOsx = function () {
 // Let's get started...
 // -------------------------------------
 
-var doRelease = {
-    'windows': forWindows,
-    'linux': forLinux,
-    'osx': forOsx
-};
-doRelease[utils.os()]();
+build(function () {
+    var doRelease = {
+        'windows': forWindows,
+        'linux': forLinux,
+        'osx': forOsx
+    };
+    doRelease[utils.os()]();
+});
