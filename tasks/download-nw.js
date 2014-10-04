@@ -6,22 +6,22 @@ var Q = require('q');
 var childProcess = require('child_process');
 var request = require('request');
 var progress = require('request-progress');
-var projectRoot = require('fs-jetpack');
+var projectDir = require('fs-jetpack');
 var DecompressZip = require('decompress-zip');
-var utils = require('./internal/utils');
+var utils = require('./utils');
 
 // --------------------------------------------------------
 // Preparations
 // --------------------------------------------------------
 
-var devManifest = projectRoot.read('package.json', 'json');
-var appManifest = projectRoot.read('app/package.json', 'json');
+var devManifest = projectDir.read('package.json', 'json');
+var appManifest = projectDir.read('app/package.json', 'json');
 
 // Version of Node-Webkit we need
 var runtimeVersion = devManifest.config.nodeWebkit.version;
 // The directory where runtime should be placed
-var destDir = projectRoot.dir('runtime/' + utils.os());
-var tmpDir = projectRoot.dir('tmp');
+var destDir = projectDir.dir('runtime/' + utils.os());
+var tmpDir = projectDir.dir('tmp');
 
 // First check if we already haven't downloaded this version of runtime.
 if (destDir.read('version') === runtimeVersion) {
@@ -59,7 +59,7 @@ var download = function () {
         console.log(err);
         deferred.reject();
     })
-    .pipe(projectRoot.createWriteStream(downloadDest))
+    .pipe(projectDir.createWriteStream(downloadDest))
     .on('error', function (err) {
         console.log('File write ERROR:');
         console.log(err);
@@ -194,5 +194,5 @@ download()
 .then(copy)
 .then(finalize)
 .then(function () {
-    console.log('Node-webkit version ' + runtimeVersion + ' downloaded successfuly.');
+    console.log('Node-webkit ' + runtimeVersion + ' downloaded successfully.');
 });

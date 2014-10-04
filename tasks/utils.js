@@ -1,5 +1,6 @@
 'use strict';
 
+var argv = require('yargs').argv;
 var os = require('os');
 
 module.exports.os = function () {
@@ -20,4 +21,8 @@ module.exports.replace = function (str, patterns) {
         str = str.replace(matcher, patterns[pattern]);
     });
     return str;
+};
+
+module.exports.getBuildTarget = function () {
+    return argv.target || 'development';
 };
