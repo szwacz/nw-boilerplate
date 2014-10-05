@@ -24,6 +24,14 @@ if (utils.os() === 'osx') {
     destForCodeDir = destDir.cwd('./node-webkit.app/Contents/Resources/app.nw');
 }
 
+var paths = {
+    jsCode: [
+        'app/**/*.js',
+        '!app/node_modules/**',
+        '!app/vendor/**'
+    ]
+}
+
 // -------------------------------------
 // Tasks
 // -------------------------------------
@@ -108,11 +116,7 @@ gulp.task('finalize', ['prepare-runtime'], function() {
 });
 
 var transpileTask = function() {
-    return gulp.src([
-        'app/**/*.js',
-        '!app/node_modules/**',
-        '!app/vendor/**'
-    ], {
+    return gulp.src(paths.jsCode, {
         read: false // Don't read the files. ES6 transpiler will do it.
     })
     .pipe(through.obj(function (file, enc, callback) {
@@ -144,7 +148,7 @@ gulp.task('less-watch', lessTask);
 
 gulp.task('watch', function () {
     gulp.watch('app/stylesheets/**', ['less-watch']);
-    gulp.watch('app/**/*.js', ['transpile-watch']);
+    gulp.watch(paths.jsCode, ['transpile-watch']);
 });
 
 gulp.task('build', ['copy', 'finalize', 'transpile', 'less']);
