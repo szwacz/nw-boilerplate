@@ -27,9 +27,7 @@
     }
   },
   "scripts": {
-    "download-nw": "node ./tasks/download-nw",
-    "app-npm-install": "cd ./app  &&  npm install",
-    "postinstall": "npm run download-nw  &&  npm run app-npm-install",
+    "postinstall": "node ./tasks/download-nw  &&  cd ./app  &&  npm install",
     "build": "./node_modules/.bin/gulp build",
     "start": "./node_modules/.bin/gulp start",
     "test": "./node_modules/.bin/gulp start --target=test",
