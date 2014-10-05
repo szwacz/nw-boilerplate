@@ -20,7 +20,7 @@ var appManifest = projectDir.read('app/package.json', 'json');
 // Version of Node-Webkit we need
 var runtimeVersion = devManifest.config.nodeWebkit.version;
 // The directory where runtime should be placed
-var destDir = projectDir.dir('runtime/' + utils.os());
+var destDir = projectDir.dir('nw/' + utils.os());
 var tmpDir = projectDir.dir('tmp');
 
 // First check if we already haven't downloaded this version of runtime.

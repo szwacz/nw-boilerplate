@@ -33,7 +33,7 @@ gulp.task('clean', function(callback) {
 });
 
 gulp.task('prepare-runtime', ['clean'] , function() {
-    var runtimeForThisOs = './runtime/' + utils.os();
+    var runtimeForThisOs = './nw/' + utils.os();
     return projectDir.copyAsync(runtimeForThisOs, destDir.path(), {
         overwrite: true,
         allBut: [
