@@ -69,11 +69,17 @@ gulp.task('finalize', ['prepare-runtime'], function() {
             manifest.name += '-test';
             // Change the main entry to spec runner.
             manifest.main = 'spec.html';
+            // Set extra flag so we know this is development mode, and we can
+            // alter some behaviours of running app.
+            manifest.developmentMode = true;
             break;
         case 'development':
             // Add "-dev" suffix to name, so node-webkit will write all
             // data like cookies and locaStorage into separate place.
             manifest.name += '-dev';
+            // Set extra flag so we know this is development mode, and we can
+            // alter some behaviours of running app.
+            manifest.developmentMode = true;
             break;
     }
     destForCodeDir.write('package.json', manifest, { jsonIndent: 4 });
