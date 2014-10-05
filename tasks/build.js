@@ -100,7 +100,7 @@ gulp.task('finalize', ['prepare-runtime'], function() {
                 prettyName: manifest.prettyName,
                 version: manifest.version
             });
-            dest.write('node-webkit.app/Contents/Info.plist', info);
+            destDir.write('node-webkit.app/Contents/Info.plist', info);
             // icon
             projectDir.copy('os/osx/icon.icns', destDir.path('node-webkit.app/Contents/Resources/icon.icns'));
             break;
