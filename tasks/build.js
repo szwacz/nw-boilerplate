@@ -4,22 +4,35 @@ var gulp = require('gulp');
 var less = require('gulp-less');
 var through = require('through2');
 var transpiler = require('es6-module-transpiler');
+var Container = transpiler.Container;
+var FileResolver = transpiler.FileResolver;
 var AmdFormatter = require('es6-module-transpiler-amd-formatter');
 var projectDir = require('fs-jetpack');
 var utils = require('./utils');
 
+// -------------------------------------
+// Setup
+// -------------------------------------
+
 var srcDir = projectDir.cwd('./app/');
 var destDir = projectDir.cwd('./build/');
+
+// On Windows and Linux our code is going into main directory...
 var destForCodeDir = destDir;
 if (utils.os() === 'osx') {
+    // ...but on OSX deep into folder in bundle structure.
     destForCodeDir = destDir.cwd('./node-webkit.app/Contents/Resources/app.nw');
 }
+
+// -------------------------------------
+// Tasks
+// -------------------------------------
 
 gulp.task('clean', function(callback) {
     return destDir.dirAsync('.', { empty: true });
 });
 
-gulp.task('prepareRuntime', ['clean'] , function() {
+gulp.task('prepare-runtime', ['clean'] , function() {
     var runtimeForThisOs = './runtime/' + utils.os();
     return projectDir.copyAsync(runtimeForThisOs, destDir.path(), {
         overwrite: true,
@@ -31,7 +44,7 @@ gulp.task('prepareRuntime', ['clean'] , function() {
     });
 });
 
-gulp.task('copy', ['prepareRuntime'], function() {
+gulp.task('copy', ['prepare-runtime'], function() {
     return projectDir.copyAsync('app', destForCodeDir.path(), {
         overwrite: true,
         only: [
@@ -42,38 +55,8 @@ gulp.task('copy', ['prepareRuntime'], function() {
     });
 });
 
-gulp.task('transpile', ['prepareRuntime'], function() {
-    return gulp.src([
-        'app/**/*.js',
-        '!app/node_modules/**',
-        '!app/vendor/**'
-    ], {
-        read: false // Don't read the files. ES6 transpiler will do it.
-    })
-    .pipe(through.obj(function (file, enc, callback) {
-        var relPath = file.path.substring(file.base.length);
-        var container = new transpiler.Container({
-            resolvers: [new transpiler.FileResolver([file.base])],
-            formatter: new AmdFormatter()
-        });
-        try {
-            container.getModule(relPath);
-            container.write(destForCodeDir.path(relPath));
-            callback();
-        } catch (err) {
-            // Show to the user precise file where transpilation error occured.
-            callback(relPath + " " + err.message);
-        }
-    }));
-});
-
-gulp.task('less', ['prepareRuntime'], function () {
-    return gulp.src('app/stylesheets/main.less')
-    .pipe(less())
-    .pipe(gulp.dest(destForCodeDir.path('stylesheets')));
-});
-
-gulp.task('finalize', ['prepareRuntime'], function() {
+// Add and customize OS-specyfic and target-specyfic stuff.
+gulp.task('finalize', ['prepare-runtime'], function() {
     var manifest = srcDir.read('package.json', 'json');
     switch (utils.getBuildTarget()) {
         case 'release':
@@ -118,9 +101,44 @@ gulp.task('finalize', ['prepareRuntime'], function() {
     }
 });
 
+var transpileTask = function() {
+    return gulp.src([
+        'app/**/*.js',
+        '!app/node_modules/**',
+        '!app/vendor/**'
+    ], {
+        read: false // Don't read the files. ES6 transpiler will do it.
+    })
+    .pipe(through.obj(function (file, enc, callback) {
+        var relPath = file.path.substring(file.base.length);
+        var container = new Container({
+            resolvers: [new FileResolver([file.base])],
+            formatter: new AmdFormatter()
+        });
+        try {
+            container.getModule(relPath);
+            container.write(destForCodeDir.path(relPath));
+            callback();
+        } catch (err) {
+            // Show to the user precise file where transpilation error occured.
+            callback(relPath + " " + err.message);
+        }
+    }));
+};
+gulp.task('transpile', ['prepare-runtime'], transpileTask);
+gulp.task('transpile-watch', transpileTask);
+
+var lessTask = function () {
+    return gulp.src('app/stylesheets/main.less')
+    .pipe(less())
+    .pipe(gulp.dest(destForCodeDir.path('stylesheets')));
+};
+gulp.task('less', ['prepare-runtime'], lessTask);
+gulp.task('less-watch', lessTask);
+
 gulp.task('watch', function () {
-    gulp.watch('app/stylesheets/**', ['less']);
-    gulp.watch('app/**/*.js', ['transpile']);
+    gulp.watch('app/stylesheets/**', ['less-watch']);
+    gulp.watch('app/**/*.js', ['transpile-watch']);
 });
 
-gulp.task('build', ['copy', 'transpile', 'less', 'finalize']);
+gulp.task('build', ['copy', 'finalize', 'transpile', 'less']);
