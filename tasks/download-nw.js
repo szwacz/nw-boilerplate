@@ -135,7 +135,6 @@ var copy = function () {
     unpackedDir = unpackedDir.cwd(dirname);
     
     var promises = unpackedDir.list('.').map(function (filename) {
-        console.log(filename)
         return unpackedDir.copyAsync(filename, destDir.path(filename));
     });
     Q.all(promises).then(deferred.resolve, deferred.reject);
