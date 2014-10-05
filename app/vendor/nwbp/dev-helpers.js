@@ -9,7 +9,7 @@
     var registerShortcuts = function () {
         var cmdPressed = false;
         
-        var keyDown = function () {
+        var keyDown = function (e) {
             if (e.keyCode == 91 || e.keyCode == 93) {
                 cmdPressed = true;
             }
