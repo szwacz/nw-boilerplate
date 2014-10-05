@@ -18,7 +18,7 @@
   },
   "config": {
     "nodeWebkit": {
-      "version": "0.10.2",
+      "version": "0.10.5",
       "downloadUrls": {
         "osx": "http://dl.node-webkit.org/v{{version}}/node-webkit-v{{version}}-osx-ia32.zip",
         "linux": "http://dl.node-webkit.org/v{{version}}/node-webkit-v{{version}}-linux-x64.tar.gz",
