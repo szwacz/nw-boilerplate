@@ -120,7 +120,7 @@ var transpileTask = function() {
         read: false // Don't read the files. ES6 transpiler will do it.
     })
     .pipe(through.obj(function (file, enc, callback) {
-        var relPath = file.path.substring(file.base.length);
+        var relPath = file.path.substring(file.base.length).replace(/\\/g, '/');
         var container = new Container({
             resolvers: [new FileResolver([file.base])],
             formatter: new AmdFormatter()
