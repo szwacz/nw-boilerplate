@@ -28,7 +28,7 @@ There are two `package.json` files:
 Placed in root directory. This file contains:
 - Node modules used for development (they are not needed in real application, so why to pollute it with them).
 - Declaration for node-webkit runtime. This is the most interesting part:
-```json
+```
 "config": {
   "nodeWebkit": {
     "version": "0.10.5",
@@ -43,7 +43,7 @@ Placed in root directory. This file contains:
 You declare here which version of node-webkit you want to use and the URLs from where NW binaries should be downloaded.
 
 #### 2. Application package.json
-Placed in **app** directory. This is real manifest of your application, as specified by [NW wiki](https://github.com/rogerwang/node-webkit/wiki/Manifest-format). Declare your app dependencies here.
+Placed in **app** directory. This is real manifest of your application, as specified by [NW wiki](https://github.com/rogerwang/node-webkit/wiki/Manifest-format). Declare your app dependencies there.
 
 ### Project's folders
 
@@ -70,13 +70,19 @@ It will also download NW runtime, and install dependencies for `package.json` fi
 npm start
 ```
 
-#### Modules loading
+#### Module loader
 
-TODO
+How about splitting your JavaScript code into modules? This project uses [es6-module-transpiler](https://github.com/esnext/es6-module-transpiler) for that. It translates new ES6 syntax into AMD (RequireJS) modules. The main advantage of this setup is that we can use RequireJS for modules authored by us, and at the same time has normal access to node's `require()`.
+```javascript
+// Browser modules are required through new ES6 syntax.
+import foo1 from './foo';
+// Node.js modules are required the same way as always.
+var foo2 = require('foo');
+```
 
 #### Helper scripts
 
-There are helper scripts in `app/vendor/nwbp` folder. Those are scripts with convenient hooks wyou will need probably anyway, like window size and position preservation. Just browse this folder to see what's there.
+There are helper scripts in `app/vendor/nwbp` folder. Those are scripts with convenient hooks wyou will need probably anyway, like window size and position preservation. Just browse this folder to see what you get.
 
 #### Unit tests
 
@@ -84,7 +90,8 @@ nw-boilerplate has preconfigured unit test runner ([jasmine](http://jasmine.gith
 ```
 npm test
 ```
-You don't have to declare paths to spec files in any particular place. The runner will search for all `*.spec.js` files through the whole project.
+You don't have to declare paths to spec files in any particular place. The runner will search for all `*.spec.js` files through the project and include them automatically.
+
 
 ## Making a release
 
@@ -97,7 +104,7 @@ npm run release
 It will start the packaging process for operating system you are running this command on. Ready for distribution file will be outputted to `releases` directory.  
 You can create Windows installer only when running on Windows, the same is true for Linux and OSX. So to generate all three installers you need all three operating systems.
 
-# Special precautions for particular operating systems
+# Special precautions for particular operating system
 
 ## Windows
 As installer [NSIS](http://nsis.sourceforge.net/Main_Page) is used. You have to install it (version 3.0), and add NSIS folder to PATH in Environment Variables (so it is reachable to scripts in this project). You know, path should look something like `C:/Program Files (x86)/NSIS`.
@@ -109,7 +116,8 @@ For now only deb packaging is supported. It should work on any Linux distributio
 
 ## OSX
 This project uses [appdmg](https://github.com/LinusU/node-appdmg) for creating pretty dmg images. While installing this library it could ask you for some additional development libraries on what you have to agree.  
-**BTW** installation of this library fails on other operating systems (Windows, Linux) when you type `npm install`. No worries, it is needed only on OSX.
+**BTW** installation of this library fails on other operating systems (Windows and Linux) when you type `npm install`. No worries, it is needed only on OSX.
+
 
 # License
 
