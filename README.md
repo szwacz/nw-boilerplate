@@ -102,10 +102,11 @@ To make a release use command:
 ```
 npm run release
 ```
-It will start the packaging process for operating system you are running this command on. Ready for distribution file will be outputted to `releases` directory.  
+It will start the packaging process for operating system you are running this command on. Ready for distribution file will be outputted to `releases` directory.
+
 You can create Windows installer only when running on Windows, the same is true for Linux and OSX. So to generate all three installers you need all three operating systems.
 
-# Special precautions for particular operating system
+# Precautions for particular operating system
 
 ## Windows
 As installer [NSIS](http://nsis.sourceforge.net/Main_Page) is used. You have to install it (version 3.0), and add NSIS folder to PATH in Environment Variables (so it is reachable to scripts in this project). You know, path should look something like `C:/Program Files (x86)/NSIS`.
