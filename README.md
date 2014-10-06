@@ -1,11 +1,11 @@
 nw-boilerplate
 ==============
-Comprehensive (ready for serious stuff) boilerplate application for [node-webkit runtime](https://github.com/rogerwang/node-webkit).  
+Comprehensive (ready for serious usecases) boilerplate application for [node-webkit runtime](https://github.com/rogerwang/node-webkit).  
 It's just a bunch of scripts, so you can change/extend/delete every part you don't like.
 
 # What it can do?
 
-- Supports all 3 operating systems supported by node-webkit.
+- Supports all 3 operating systems supported by node-webkit (OSX, Linux (x64), Windows).
 - Lets you start developing node-webkit app just by typing 3 commands in terminal.
 - Has preconfigured, full blown development environment.
 - Spits out ready for distribution installers for every operating system.
@@ -26,7 +26,7 @@ There are two `package.json` files:
 
 #### 1. Development package.json
 Placed in root directory. This file contains:
-- Node modules used for development (they are not needed in real application, so why to pollute it with them).
+- Node modules used for development (Tthey are not needed in real application, so why to pollute it with them?).
 - Declaration for node-webkit runtime. This is the most interesting part:
 ```
 "config": {
@@ -47,9 +47,9 @@ Placed in **app** directory. This is real manifest of your application, as speci
 
 ### Project's folders
 
-- `app` - here is all code of your application.
+- `app` - code of your application goes here.
 - `build` - in this folder lands built, runnable application.
-- `nw` - node-webkit runtime is kept here.
+- `nw` - downloaded node-webkit binaries.
 - `os` - application files specyfic for particular operating system.
 - `releases` - ready to distribute installers will land here.
 - `tasks` - build and development environment scripts.
@@ -62,7 +62,7 @@ Placed in **app** directory. This is real manifest of your application, as speci
 ```
 npm install
 ```
-It will also download NW runtime, and install dependencies for `package.json` file inside `app` folder.
+It will also download NW runtime, and install dependencies for `package.json` inside `app` folder.
 
 #### Starting the app
 
@@ -72,17 +72,18 @@ npm start
 
 #### Module loader
 
-How about splitting your JavaScript code into modules? This project uses [es6-module-transpiler](https://github.com/esnext/es6-module-transpiler) for that. It translates new ES6 syntax into AMD (RequireJS) modules. The main advantage of this setup is that we can use RequireJS for modules authored by us, and at the same time has normal access to node's `require()`.
+How about splitting your JavaScript code into modules? This project uses [es6-module-transpiler](https://github.com/esnext/es6-module-transpiler) for that. It translates new ES6 syntax (which is cool!) into AMD (RequireJS) modules. The main advantage of this setup is that we can use ES6/RequireJS for modules authored by us, and at the same time has normal access to node's `require()` to obtain stuff from npm.
 ```javascript
 // Browser modules are required through new ES6 syntax.
+// It will be translated into AMD definition.
 import foo1 from './foo';
-// Node.js modules are required the same way as always.
+// Node.js (npm) modules are required the same way as always.
 var foo2 = require('foo');
 ```
 
 #### Helper scripts
 
-There are helper scripts in `app/vendor/nwbp` folder. Those are scripts with convenient hooks wyou will need probably anyway, like window size and position preservation. Just browse this folder to see what you get.
+There are helper scripts in `app/vendor/nwbp` folder. Those are scripts with convenient hooks wou will need  anyway (like window size and position preservation). Just browse this folder to see what you get.
 
 #### Unit tests
 
@@ -90,7 +91,7 @@ nw-boilerplate has preconfigured unit test runner ([jasmine](http://jasmine.gith
 ```
 npm test
 ```
-You don't have to declare paths to spec files in any particular place. The runner will search for all `*.spec.js` files through the project and include them automatically.
+You don't have to declare paths to spec files in any particular place. The runner will search throu the project for all `*.spec.js` files and include them automatically.
 
 
 ## Making a release
