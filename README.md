@@ -45,6 +45,8 @@ You declare here which version of node-webkit you want to use and the URLs from 
 #### 2. Application package.json
 Placed in **app** directory. This is real manifest of your application, as specified by [NW wiki](https://github.com/rogerwang/node-webkit/wiki/Manifest-format). Declare your app dependencies there.
 
+There is one extra field in this file: `prettyName`. Unlike the `name` field, which have to be file-path-freindly (no spaces and strange characters), `prettyName` could have any characters you like, and it's used as the app name displayed to the user.
+
 ### Project's folders
 
 - `app` - code of your application goes here.
