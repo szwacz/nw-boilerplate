@@ -1,6 +1,6 @@
 nw-boilerplate
 ==============
-Comprehensive (ready for serious usecases) boilerplate application for [node-webkit runtime](https://github.com/rogerwang/node-webkit).  
+Comprehensive, ready for serious stuff, boilerplate application for [node-webkit runtime](https://github.com/rogerwang/node-webkit).  
 It's just a bunch of scripts, so you can change/extend/delete every part you don't like.
 
 # What it can do?
