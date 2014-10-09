@@ -110,6 +110,7 @@ releaseForOs.linux = function (callback) {
 // -------------------------------------
 
 releaseForOs.windows = function (callback) {
+    projectDir.dir('./releases');
     var manifest = projectDir.read('app/package.json', 'json');
     var filename = manifest.name + '_' + manifest.version + '.exe';
     var installScript = projectDir.read('./os/windows/installer.nsi');
@@ -117,6 +118,7 @@ releaseForOs.windows = function (callback) {
         "name": manifest.name,
         "prettyName": manifest.prettyName,
         "version": manifest.version,
+        // The paths expect the .nsi file is in "nw-boilerplate/tmp" folder. 
         "src": "..\\build",
         "dest": "..\\releases\\" + filename,
         "icon": "..\\os\\windows\\icon.ico",
