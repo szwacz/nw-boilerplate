@@ -28,6 +28,7 @@ var paths = {
     jsCode: [
         'app/**/*.js',
         '!app/node_modules/**',
+        '!app/bower_components/**',
         '!app/vendor/**'
     ]
 }
