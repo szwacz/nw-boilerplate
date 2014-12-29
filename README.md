@@ -57,7 +57,7 @@ There is one extra field in this file: `prettyName`. Unlike the `name` field, wh
 - `tasks` - build and development environment scripts.
 
 
-## Development
+# Development
 
 #### Installation
 
@@ -74,7 +74,7 @@ npm start
 
 #### Module loader
 
-How about splitting your JavaScript code into modules? This project uses [es6-module-transpiler](https://github.com/esnext/es6-module-transpiler) for that. It translates new ES6 syntax (which is cool!) into AMD (RequireJS) modules. The main advantage of this setup is that we can use ES6/RequireJS for modules authored by us, and at the same time has normal access to node's `require()` to obtain stuff from npm.
+How about splitting your JavaScript code into modules? This project uses [es6-module-transpiler](https://github.com/esnext/es6-module-transpiler) for that. It translates new ES6 syntax (which is very cool) into AMD (RequireJS) modules. The main advantage of this setup is that we can use ES6/RequireJS for modules authored by us, and at the same time have normal access to node's `require()` to obtain stuff from npm.
 ```javascript
 // Browser modules are required through new ES6 syntax.
 // It will be translated into AMD definition.
@@ -96,7 +96,7 @@ npm test
 You don't have to declare paths to spec files in any particular place. The runner will search throu the project for all `*.spec.js` files and include them automatically.
 
 
-## Making a release
+# Making a release
 
 There are various icon and bitmap files in `os` directory. They are used in installers. Replace them with your own of the same size and file type (if bmp is used, it has to be bmp format).
 
@@ -107,6 +107,7 @@ npm run release
 It will start the packaging process for operating system you are running this command on. Ready for distribution file will be outputted to `releases` directory.
 
 You can create Windows installer only when running on Windows, the same is true for Linux and OSX. So to generate all three installers you need all three operating systems.
+
 
 # Precautions for particular operating system
 
@@ -120,7 +121,7 @@ For now only deb packaging is supported. It should work on any Linux distributio
 
 ## OSX
 This project uses [appdmg](https://github.com/LinusU/node-appdmg) for creating pretty dmg images. While installing this library it could ask you for some additional development libraries on what you have to agree.  
-**BTW** installation of this library fails on other operating systems (Windows and Linux) when you type `npm install`. No worries, it is needed only on OSX.
+**BTW** installation of this library fails on other operating systems (Windows and Linux) when you type `npm install`. No worries, it's needed only on OSX.
 
 
 # License
