@@ -26,7 +26,7 @@ There are two `package.json` files:
 
 #### 1. Development package.json
 Placed in root directory. This file contains:
-- Node modules used for development (Tthey are not needed in real application, so why to pollute it with them?).
+- Node modules used for development (They are not needed in real application, so why to pollute it with them?).
 - Declaration for node-webkit runtime. This is the most interesting part:
 ```
 "config": {
