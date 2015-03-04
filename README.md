@@ -52,7 +52,7 @@ There is one extra field in this file: `prettyName`. Unlike the `name` field, wh
 - `app` - code of your application goes here.
 - `build` - in this folder lands built, runnable application.
 - `nw` - downloaded node-webkit binaries.
-- `os` - application files specyfic for particular operating system.
+- `os` - application files specific for particular operating system.
 - `releases` - ready to distribute installers will land here.
 - `tasks` - build and development environment scripts.
 
