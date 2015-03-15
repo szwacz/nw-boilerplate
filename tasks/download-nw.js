@@ -48,17 +48,7 @@ var finalize = function () {
                     console.log(error);
                     console.log(stderr);
                 } else {
-                    // Next make sure all files has broad read permission...
-                    childProcess.exec("chmod -R a+r .", { cwd: destDir.path() }, function (error, stdout, stderr) {
-                        if (error || stderr) {
-                            console.log(error);
-                            console.log(stderr);
-                        } else {
-                            // ...and finally that main file has broad execution premission.
-                            destDir.file('nw', { mode: '755' });
-                            deferred.resolve();
-                        }
-                    });
+                    deferred.resolve();
                 }
             });
     } else {
@@ -76,7 +66,7 @@ destDir.dir('.', { empty: true });
 
 var Download = require('download');
 
-var download = new Download({ extract: true, strip: 1 })
+var download = new Download({ extract: true, strip: 1, mode: '755' })
 .get(url)
 .dest(destDir.path());
 
