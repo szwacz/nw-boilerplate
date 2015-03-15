@@ -1,4 +1,4 @@
-// Downloads node-webkit runtime and unpacks it into proper place.
+// Downloads NW.js runtime and unpacks it into proper place.
 
 'use strict';
 
@@ -14,8 +14,8 @@ var utils = require('./utils');
 var devManifest = projectDir.read('package.json', 'json');
 var appManifest = projectDir.read('app/package.json', 'json');
 
-// Version of Node-Webkit we need
-var runtimeVersion = devManifest.config.nodeWebkit.version;
+// Version of NW.js we need
+var runtimeVersion = devManifest.config.nw.version;
 // The directory where runtime should be placed
 var destDir = projectDir.dir('nw/' + utils.os());
 
@@ -26,7 +26,7 @@ if (destDir.read('version') === runtimeVersion) {
 }
 
 // Figure out the URL we have to download.
-var url = devManifest.config.nodeWebkit.downloadUrls[utils.os()];
+var url = devManifest.config.nw.downloadUrls[utils.os()];
 // URL has places where we have to inject version we are interested with.
 url = utils.replace(url, { version: runtimeVersion });
 
@@ -40,7 +40,7 @@ var finalize = function () {
     // Special preparations necessary for linux runtime
     if (utils.os() === 'linux') {
         // The hack for problems with libudev.so.0 on Linux platform.
-        // Read more: https://github.com/rogerwang/node-webkit/wiki/The-solution-of-lacking-libudev.so.0
+        // Read more: https://github.com/nwjs/nw.js/wiki/The-solution-of-lacking-libudev.so.0
         childProcess.exec("sed -i 's/udev\.so\.0/udev.so.1/g' nw", { cwd: destDir.path() },
             function (error, stdout, stderr) {
                 if (error || stderr) {
@@ -70,7 +70,7 @@ var download = new Download({ extract: true, strip: 1, mode: '755' })
 .get(url)
 .dest(destDir.path());
 
-console.log('Downloading node-webkit...');
+console.log('Downloading NW.js...');
 
 download.run(function (err, files) {
     if (err) {
@@ -78,7 +78,7 @@ download.run(function (err, files) {
     } else {
         finalize()
         .then(function () {
-            console.log('Node-webkit v' + runtimeVersion + ' downloaded successfully!');
+            console.log('NW.js v' + runtimeVersion + ' downloaded successfully!');
         });
     }
 });

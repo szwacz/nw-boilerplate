@@ -10,7 +10,7 @@ gulp.task('start', ['watch', 'build'], function () {
 
     switch (utils.os()) {
         case 'osx':
-            app = childProcess.spawn('./build/node-webkit.app/Contents/MacOS/node-webkit');
+            app = childProcess.spawn('./build/nwjs.app/Contents/MacOS/nwjs');
             break;
         case 'linux':
             app = childProcess.spawn('./build/nw');

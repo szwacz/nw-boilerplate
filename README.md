@@ -1,12 +1,12 @@
 nw-boilerplate
 ==============
-Comprehensive, ready for serious stuff, boilerplate application for [node-webkit runtime](https://github.com/rogerwang/node-webkit).  
+Comprehensive, ready for serious stuff, boilerplate application for [NW.js](https://github.com/nwjs/nw.js).  
 It's just a bunch of scripts, so you can change/extend/delete every part you don't like.
 
 # What it can do?
 
-- Supports all 3 operating systems supported by node-webkit (OSX, Linux (x64), Windows).
-- Lets you start developing node-webkit app just by typing 3 commands in terminal.
+- Supports all 3 operating systems supported by NW.js (OSX, Linux, Windows).
+- Lets you start developing NW.js app just by typing 3 commands in terminal.
 - Has preconfigured, full blown development environment.
 - Spits out ready for distribution installers for every operating system.
 
@@ -16,7 +16,7 @@ It's just a bunch of scripts, so you can change/extend/delete every part you don
 The only development dependency of this project is Node.js. So just make sure you have it installed.
 
 1. Clone/download this repository (e.g. `git clone https://github.com/szwacz/nw-boilerplate.git`).
-2. Install dependencies with `npm install` (it will also download node-webkit runtime).
+2. Install dependencies with `npm install` (it will also download NW.js runtime).
 3. Run `npm start` to launch the application.
 
 
@@ -27,23 +27,23 @@ There are two `package.json` files:
 #### 1. Development package.json
 Placed in root directory. This file contains:
 - Node modules used for development (They are not needed in real application, so why to pollute it with them?).
-- Declaration for node-webkit runtime. This is the most interesting part:
+- Declaration for NW.js runtime. This is the most interesting part:
 ```
 "config": {
-  "nodeWebkit": {
-    "version": "0.10.5",
+  "nw": {
+    "version": "0.12.0",
     "downloadUrls": {
-      "osx": "http://dl.node-webkit.org/v{{version}}/node-webkit-v{{version}}-osx-ia32.zip",
-      "linux": "http://dl.node-webkit.org/v{{version}}/node-webkit-v{{version}}-linux-x64.tar.gz",
-      "windows": "http://dl.node-webkit.org/v{{version}}/node-webkit-v{{version}}-win-ia32.zip"
+      "osx": "http://dl.nwjs.io/v{{version}}/nwjs-v{{version}}-osx-x64.zip",
+      "linux": "https://dl.nwjs.io/v{{version}}/nwjs-v{{version}}-linux-x64.tar.gz",
+      "windows": "https://dl.nwjs.io/v{{version}}/nwjs-{{version}}-win-ia32.zip"
     }
   }
-}
+},
 ```
-You declare here which version of node-webkit you want to use and the URLs from where NW binaries should be downloaded.
+You declare here which version of NW.js you want to use and the URLs from where NW binaries should be downloaded.
 
 #### 2. Application package.json
-Placed in **app** directory. This is real manifest of your application, as specified by [NW wiki](https://github.com/rogerwang/node-webkit/wiki/Manifest-format). Declare your app dependencies there.
+Placed in **app** directory. This is real manifest of your application, as specified by [NW wiki](https://github.com/nwjs/nw.js/wiki/Manifest-format). Declare your app dependencies there.
 
 There is one extra field in this file: `prettyName`. Unlike the `name` field, which have to be file-path-freindly (no spaces and strange characters), `prettyName` could have any characters you like, and it's used as the app name displayed to the user.
 
@@ -51,7 +51,7 @@ There is one extra field in this file: `prettyName`. Unlike the `name` field, wh
 
 - `app` - code of your application goes here.
 - `build` - in this folder lands built, runnable application.
-- `nw` - downloaded node-webkit binaries.
+- `nw` - downloaded NW.js binaries.
 - `os` - application files specific for particular operating system.
 - `releases` - ready to distribute installers will land here.
 - `tasks` - build and development environment scripts.

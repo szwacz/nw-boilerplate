@@ -21,7 +21,7 @@ var destDir = projectDir.cwd('./build/');
 var destForCodeDir = destDir;
 if (utils.os() === 'osx') {
     // ...but on OSX deep into folder in bundle structure.
-    destForCodeDir = destDir.cwd('./node-webkit.app/Contents/Resources/app.nw');
+    destForCodeDir = destDir.cwd('./nwjs.app/Contents/Resources/app.nw');
 }
 
 var paths = {
@@ -73,7 +73,7 @@ gulp.task('finalize', ['prepare-runtime'], function() {
             manifest.window.toolbar = false;
             break;
         case 'test':
-            // Add "-test" suffix to name, so node-webkit will write all
+            // Add "-test" suffix to name, so NW.js will write all
             // data like cookies and locaStorage into separate place.
             manifest.name += '-test';
             // Change the main entry to spec runner.
@@ -83,7 +83,7 @@ gulp.task('finalize', ['prepare-runtime'], function() {
             manifest.developmentMode = true;
             break;
         case 'development':
-            // Add "-dev" suffix to name, so node-webkit will write all
+            // Add "-dev" suffix to name, so NW.js will write all
             // data like cookies and locaStorage into separate place.
             manifest.name += '-dev';
             // Set extra flag so we know this is development mode, and we can
@@ -92,9 +92,9 @@ gulp.task('finalize', ['prepare-runtime'], function() {
             break;
     }
     destForCodeDir.write('package.json', manifest, { jsonIndent: 4 });
-    
+
     projectDir.copy('os/icon.png', destForCodeDir.path('icon.png'));
-    
+
     // Stuff specyfic for certains OS
     switch (utils.os()) {
         case 'windows':
@@ -109,9 +109,9 @@ gulp.task('finalize', ['prepare-runtime'], function() {
                 prettyName: manifest.prettyName,
                 version: manifest.version
             });
-            destDir.write('node-webkit.app/Contents/Info.plist', info);
+            destDir.write('nwjs.app/Contents/Info.plist', info);
             // icon
-            projectDir.copy('os/osx/icon.icns', destDir.path('node-webkit.app/Contents/Resources/icon.icns'));
+            projectDir.copy('os/osx/icon.icns', destDir.path('nwjs.app/Contents/Resources/icon.icns'));
             break;
     }
 });

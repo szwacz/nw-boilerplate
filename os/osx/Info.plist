@@ -7,7 +7,7 @@
 	<key>CFBundleDisplayName</key>
 	<string>{{prettyName}}</string>
 	<key>CFBundleExecutable</key>
-	<string>node-webkit</string>
+	<string>nwjs</string>
 	<key>CFBundleIconFile</key>
 	<string>icon.icns</string>
 	<key>CFBundleIdentifier</key>
