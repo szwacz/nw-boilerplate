@@ -14,7 +14,7 @@
     <script>
         // Overwrite defaul behaviour of boot.js
         // We can't start with onload, need to wait until all specs are loaded.
-        window.startJasmine = window.onload;
+        var startJasmine = window.onload;
         window.onload = null;
     </script>
     <script src="vendor/require.js"></script>
@@ -32,7 +32,7 @@
         var fs = require('fs');
         var specPaths = [];
 
-        // Directory names where specs will not be searched.
+        // Directory names to omit during specs searching.
         var blacklisted = ['node_modules'];
 
         var parseDir = function (path) {
@@ -55,8 +55,8 @@
 
         requirejs.config({ baseUrl: '.' });
         requirejs(specPaths, function () {
-            // Start the tests when all modules has been loaded.
-            window.startJasmine();
+            // All modules has been loaded, we can start now.
+            startJasmine();
         });
 
     </script>
