@@ -1,5 +1,5 @@
 // Browser modules are required through new ES6 syntax.
-import { greet } from './hello/hello_world';
+import { greet } from './hello_world/hello_world';
 
 // Node modules are required the same way as always.
 var os = require('os');
