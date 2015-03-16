@@ -39,7 +39,8 @@ gulp.task('clean', function(callback) {
     return destDir.dirAsync('.', { empty: true });
 });
 
-gulp.task('prepare-runtime', ['clean'] , function() {
+
+gulp.task('prepare-runtime', ['clean'] , function () {
     var runtimeForThisOs = './nw/' + utils.os();
     return projectDir.copyAsync(runtimeForThisOs, destDir.path(), {
         overwrite: true,
@@ -51,7 +52,8 @@ gulp.task('prepare-runtime', ['clean'] , function() {
     });
 });
 
-gulp.task('copy', ['prepare-runtime'], function() {
+
+var copyTask = function () {
     return projectDir.copyAsync('app', destForCodeDir.path(), {
         overwrite: true,
         only: [
@@ -60,10 +62,34 @@ gulp.task('copy', ['prepare-runtime'], function() {
             '*.html'
         ]
     });
-});
+};
+gulp.task('copy', ['prepare-runtime'], copyTask);
+gulp.task('copy-watch', copyTask);
+
+
+var transpileTask = function () {
+    return gulp.src(paths.jsCode)
+    .pipe(map(function(code, filename) {
+        var transpiled = esperanto.toAmd(code.toString(), { strict: true });
+        return transpiled.code;
+    }))
+    .pipe(gulp.dest(destForCodeDir.path()));
+};
+gulp.task('transpile', ['prepare-runtime'], transpileTask);
+gulp.task('transpile-watch', transpileTask);
+
+
+var lessTask = function () {
+    return gulp.src('app/stylesheets/main.less')
+    .pipe(less())
+    .pipe(gulp.dest(destForCodeDir.path('stylesheets')));
+};
+gulp.task('less', ['prepare-runtime'], lessTask);
+gulp.task('less-watch', lessTask);
+
 
 // Add and customize OS-specyfic and target-specyfic stuff.
-gulp.task('finalize', ['prepare-runtime'], function() {
+gulp.task('finalize', ['prepare-runtime'], function () {
     var manifest = srcDir.read('package.json', 'json');
     switch (utils.getBuildTarget()) {
         case 'release':
@@ -114,28 +140,12 @@ gulp.task('finalize', ['prepare-runtime'], function() {
     }
 });
 
-var transpileTask = function() {
-    return gulp.src(paths.jsCode)
-    .pipe(map(function(code, filename) {
-        var transpiled = esperanto.toAmd(code.toString(), { strict: true });
-        return transpiled.code;
-    }))
-    .pipe(gulp.dest(destForCodeDir.path()));
-};
-gulp.task('transpile', ['prepare-runtime'], transpileTask);
-gulp.task('transpile-watch', transpileTask);
-
-var lessTask = function () {
-    return gulp.src('app/stylesheets/main.less')
-    .pipe(less())
-    .pipe(gulp.dest(destForCodeDir.path('stylesheets')));
-};
-gulp.task('less', ['prepare-runtime'], lessTask);
-gulp.task('less-watch', lessTask);
 
 gulp.task('watch', function () {
-    gulp.watch('app/stylesheets/**', ['less-watch']);
     gulp.watch(paths.jsCode, ['transpile-watch']);
+    gulp.watch('*.less', ['less-watch']);
+    gulp.watch('*.html', ['copy-watch']);
 });
 
-gulp.task('build', ['copy', 'finalize', 'transpile', 'less']);
+
+gulp.task('build', ['transpile', 'less', 'copy', 'finalize']);
