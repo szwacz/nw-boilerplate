@@ -2,12 +2,10 @@
 
 var gulp = require('gulp');
 var less = require('gulp-less');
-var through = require('through2');
-var transpiler = require('es6-module-transpiler');
-var Container = transpiler.Container;
-var FileResolver = transpiler.FileResolver;
-var AmdFormatter = require('es6-module-transpiler-amd-formatter');
+var esperanto = require('esperanto');
+var map = require('vinyl-map');
 var projectDir = require('fs-jetpack');
+
 var utils = require('./utils');
 
 // -------------------------------------
@@ -117,24 +115,12 @@ gulp.task('finalize', ['prepare-runtime'], function() {
 });
 
 var transpileTask = function() {
-    return gulp.src(paths.jsCode, {
-        read: false // Don't read the files. ES6 transpiler will do it.
-    })
-    .pipe(through.obj(function (file, enc, callback) {
-        var relPath = file.path.substring(file.base.length).replace(/\\/g, '/');
-        var container = new Container({
-            resolvers: [new FileResolver([file.base])],
-            formatter: new AmdFormatter()
-        });
-        try {
-            container.getModule(relPath);
-            container.write(destForCodeDir.path(relPath));
-            callback();
-        } catch (err) {
-            // Show to the user precise file where transpilation error occured.
-            callback(relPath + " " + err.message);
-        }
-    }));
+    return gulp.src(paths.jsCode)
+    .pipe(map(function(code, filename) {
+        var transpiled = esperanto.toAmd(code.toString(), { strict: true });
+        return transpiled.code;
+    }))
+    .pipe(gulp.dest(destForCodeDir.path()));
 };
 gulp.task('transpile', ['prepare-runtime'], transpileTask);
 gulp.task('transpile-watch', transpileTask);
