@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2008-2014 Pivotal Labs
+Copyright (c) 2008-2015 Pivotal Labs
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -40,13 +40,15 @@ jasmineRequire.HtmlReporter = function(j$) {
       createElement = options.createElement,
       createTextNode = options.createTextNode,
       onRaiseExceptionsClick = options.onRaiseExceptionsClick || function() {},
+      addToExistingQueryString = options.addToExistingQueryString || defaultQueryString,
       timer = options.timer || noopTimer,
       results = [],
       specsExecuted = 0,
       failureCount = 0,
       pendingSpecCount = 0,
       htmlReporterMain,
-      symbols;
+      symbols,
+      failedSuites = [];
 
     this.initialize = function() {
       clearPrior();
@@ -83,6 +85,10 @@ jasmineRequire.HtmlReporter = function(j$) {
     };
 
     this.suiteDone = function(result) {
+      if (result.status == 'failed') {
+        failedSuites.push(result);
+      }
+
       if (currentParent == topResults) {
         return;
       }
@@ -96,7 +102,7 @@ jasmineRequire.HtmlReporter = function(j$) {
 
     var failures = [];
     this.specDone = function(result) {
-      if(noExpectations(result) && console && console.error) {
+      if(noExpectations(result) && typeof console !== 'undefined' && typeof console.error !== 'undefined') {
         console.error('Spec \'' + result.fullName + '\' has no expectations.');
       }
 
@@ -178,6 +184,15 @@ jasmineRequire.HtmlReporter = function(j$) {
 
       alert.appendChild(createDom('span', {className: statusBarClassName}, statusBarMessage));
 
+      for(i = 0; i < failedSuites.length; i++) {
+        var failedSuite = failedSuites[i];
+        for(var j = 0; j < failedSuite.failedExpectations.length; j++) {
+          var errorBarMessage = 'AfterAll ' + failedSuite.failedExpectations[j].message;
+          var errorBarClassName = 'bar errored';
+          alert.appendChild(createDom('span', {className: errorBarClassName}, errorBarMessage));
+        }
+      }
+
       var results = find('.results');
       results.appendChild(summary);
 
@@ -205,6 +220,9 @@ jasmineRequire.HtmlReporter = function(j$) {
             var specDescription = resultNode.result.description;
             if(noExpectations(resultNode.result)) {
               specDescription = 'SPEC HAS NO EXPECTATIONS ' + specDescription;
+            }
+            if(resultNode.result.status === 'pending' && resultNode.result.pendingReason !== '') {
+              specDescription = specDescription + ' PENDING WITH MESSAGE: ' + resultNode.result.pendingReason;
             }
             specListNode.appendChild(
               createDom('li', {
@@ -253,7 +271,7 @@ jasmineRequire.HtmlReporter = function(j$) {
     function clearPrior() {
       // return the reporter
       var oldReporter = find('');
-      
+
       if(oldReporter) {
         getContainer().removeChild(oldReporter);
       }
@@ -292,7 +310,11 @@ jasmineRequire.HtmlReporter = function(j$) {
     }
 
     function specHref(result) {
-      return '?spec=' + encodeURIComponent(result.fullName);
+      return addToExistingQueryString('spec', result.fullName);
+    }
+
+    function defaultQueryString(key, value) {
+      return '?' + key + '=' + value;
     }
 
     function setMenuModeTo(mode) {
@@ -344,10 +366,14 @@ jasmineRequire.ResultsNode = function() {
 jasmineRequire.QueryString = function() {
   function QueryString(options) {
 
-    this.setParam = function(key, value) {
+    this.navigateWithNewParam = function(key, value) {
+      options.getWindowLocation().search = this.fullStringWithNewParam(key, value);
+    };
+
+    this.fullStringWithNewParam = function(key, value) {
       var paramMap = queryStringToParamMap();
       paramMap[key] = value;
-      options.getWindowLocation().search = toQueryString(paramMap);
+      return toQueryString(paramMap);
     };
 
     this.getParam = function(key) {

@@ -3,37 +3,38 @@
 <head>
     <meta charset="utf-8">
     <title>Jasmine Spec Runner</title>
-    
+
     <link rel="stylesheet" type="text/css" href="vendor/jasmine/jasmine.css">
-    
+
     <script src="vendor/nwbp/dev-helpers.js"></script>
-    
+
     <script src="vendor/jasmine/jasmine.js"></script>
     <script src="vendor/jasmine/jasmine-html.js"></script>
-    <!--
-        Note: boot.js file was sligltly modified to work with AMD modules.
-        The default behaviour of starting with window.onload was changed
-        to start when function window.startJasmine is called.
-    -->
     <script src="vendor/jasmine/boot.js"></script>
-    <script src="vendor/require.js"></script>
-    
     <script>
-        
+        // Overwrite defaul behaviour of boot.js
+        // We can't start with onload, need to wait until all specs are loaded.
+        window.startJasmine = window.onload;
+        window.onload = null;
+    </script>
+    <script src="vendor/require.js"></script>
+
+    <script>
+
         // Catch all uncought node.js errors and report them to the console.
         process.on('uncaughtException', function(err) {
             console.log(err);
         });
-        
+
         // This is automatic spec loader.
-        // All files with extension ".spec.js", will be loaded and executed as specs,
-        // so you don't have to declare them here in any way.
+        // All files with extension ".spec.js", will be loaded and executed
+        // as specs, so you don't have to declare them here in any way.
         var fs = require('fs');
         var specPaths = [];
-        
+
         // Directory names where specs will not be searched.
         var blacklisted = ['node_modules'];
-        
+
         var parseDir = function (path) {
             var files = fs.readdirSync(path);
             files.forEach(function (filename) {
@@ -49,17 +50,17 @@
                 }
             });
         };
-        
+
         parseDir('.');
-        
+
         requirejs.config({ baseUrl: '.' });
         requirejs(specPaths, function () {
-            // Start the tests after all modules has been loaded.
+            // Start the tests when all modules has been loaded.
             window.startJasmine();
         });
-        
+
     </script>
-    
+
 </head>
 <body>
 </body>
