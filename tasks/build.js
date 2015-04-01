@@ -43,12 +43,7 @@ gulp.task('clean', function(callback) {
 gulp.task('prepare-runtime', ['clean'] , function () {
     var runtimeForThisOs = './nw/' + utils.os();
     return projectDir.copyAsync(runtimeForThisOs, destDir.path(), {
-        overwrite: true,
-        allBut: [
-            'version',
-            'nwsnapshot*',
-            'credits.html'
-        ]
+        overwrite: true
     });
 });
 
@@ -56,9 +51,9 @@ gulp.task('prepare-runtime', ['clean'] , function () {
 var copyTask = function () {
     return projectDir.copyAsync('app', destForCodeDir.path(), {
         overwrite: true,
-        only: [
-            'app/node_modules',
-            'app/vendor',
+        matching: [
+            './node_modules',
+            './vendor',
             '*.html'
         ]
     });
