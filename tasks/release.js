@@ -37,13 +37,21 @@ releaseForOs.osx = function (callback) {
     });
     tmpDir.write('appdmg.json', dmgManifest);
 
-    // Delete dmg with this name if already exists
-    releasesDir.file(dmgName, { exists: false });
+    // Delete DMG file with this name if already exists
+    releasesDir.remove(dmgName);
 
     gulpUtil.log('Packaging to DMG image...');
 
-    appdmg(tmpDir.path('appdmg.json'), releasesDir.path(dmgName), function (err, path) {
-        gulpUtil.log('DMG image', path, 'ready!');
+    var readyDmg = releasesDir.path(dmgName);
+    appdmg({
+        source: tmpDir.path('appdmg.json'),
+        target: readyDmg
+    })
+    .on('error', function (err) {
+        console.error(err);
+    })
+    .on('finish', function () {
+        gulpUtil.log('DMG image ready!', readyDmg);
         cleanTmp();
         callback();
     });
