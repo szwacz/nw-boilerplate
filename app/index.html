@@ -18,6 +18,10 @@
     <script>
         (function () {
             var gui = require('nw.gui');
+            var win = gui.Window.get();
+
+            // Set focus on window. Just in case we don't have it.
+            win.focus();
 
             // Get name of the app from package.json and set it as title.
             document.title = gui.App.manifest.prettyName;
@@ -26,7 +30,7 @@
             if (process.platform === 'darwin') {
                 var mb = new gui.Menu({ type: "menubar" });
                 mb.createMacBuiltin(gui.App.manifest.prettyName);
-                gui.Window.get().menu = mb;
+                win.menu = mb;
             }
         }());
     </script>
