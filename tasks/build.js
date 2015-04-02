@@ -52,8 +52,8 @@ var copyTask = function () {
     return projectDir.copyAsync('app', destForCodeDir.path(), {
         overwrite: true,
         matching: [
-            './node_modules',
-            './vendor',
+            './node_modules/**',
+            './vendor/**',
             '*.html'
         ]
     });
