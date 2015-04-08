@@ -26,7 +26,7 @@ There are two `package.json` files:
 
 #### 1. Development package.json
 Placed in root directory. This file contains:
-- Node modules used for development (They are not needed in real application, so why to pollute it with them?).
+- Node modules used for development (Those are not needed in real application, so no need to pollute it with them).
 - Declaration for NW.js runtime. This is the most interesting part:
 ```
 "config": {
@@ -74,13 +74,14 @@ npm start
 
 #### Module loader
 
-How about splitting your JavaScript code into modules? This project uses [es6-module-transpiler](https://github.com/esnext/es6-module-transpiler) for that. It translates new ES6 syntax (which is very cool) into AMD (RequireJS) modules. The main advantage of this setup is that we can use ES6/RequireJS for modules authored by us, and at the same time have normal access to node's `require()` to obtain stuff from npm.
+How about splitting your JavaScript code into modules? This project supports it by new ES6 syntax (thanks to [esperanto](https://github.com/esperantojs/esperanto)). ES6 modules are translated into AMD (RequireJS) modules. The main advantage of this setup is that you can use ES6/RequireJS for your own modules, and at the same time have normal access to node's `require()` to obtain stuff from npm.
 ```javascript
-// Browser modules are required through new ES6 syntax.
-// It will be translated into AMD definition.
-import foo1 from './foo';
-// Node.js (npm) modules are required the same way as always.
-var foo2 = require('foo');
+// Modules you write are required through new ES6 syntax
+// (It will be translated into AMD definition).
+import myOwnModule from './my_own_module';
+// Node.js (npm) modules are required the same way as always
+// (so you can still access all the goodness in npm).
+var moment = require('moment');
 ```
 
 #### Helper scripts
@@ -128,7 +129,7 @@ This project uses [appdmg](https://github.com/LinusU/node-appdmg) for creating p
 
 The MIT License (MIT)
 
-Copyright (c) 2014 Jakub Szwacz
+Copyright (c) 2014-2015 Jakub Szwacz
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
