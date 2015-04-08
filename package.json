@@ -3,7 +3,7 @@
   "devDependencies": {
     "download": "^4.0.1",
     "esperanto": "^0.6.17",
-    "fs-jetpack": "^0.6.0",
+    "fs-jetpack": "^0.6.2",
     "gulp": "^3.8.8",
     "gulp-less": "^1.3.6",
     "gulp-util": "^3.0.1",
