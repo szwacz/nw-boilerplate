@@ -1,5 +1,4 @@
 {
-  "nwBoilerplateVersion": "1.0",
   "devDependencies": {
     "download": "^4.0.1",
     "esperanto": "^0.6.17",
