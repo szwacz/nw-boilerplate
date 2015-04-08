@@ -33,6 +33,7 @@
                 // It also prevents bug https://github.com/nwjs/nw.js/issues/1105
                 setTimeout(function () {
                     win.maximize();
+                    maximized = snapshotWindowSize();
                 }, 100);
             }
         } catch (err) {
@@ -59,23 +60,26 @@
     };
 
     var snapshotWindowSize = function (obj) {
+        obj = obj || {};
         obj.x = win.x;
         obj.y = win.y;
         obj.width = win.width;
         obj.height = win.height;
+        return obj;
     }
 
     var save = function () {
         if (currMode === 'minimized') {
-            // Save maximized dimensions into separate object for future use.
-            maximized = {};
-            snapshotWindowSize(maximized);
-            // Don't save minimized state into main storage.
+            // Don't save minimized state.
             return;
         }
         if (currMode === 'normal') {
             // Update window dimensions only if in normal mode.
             snapshotWindowSize(state);
+        }
+        if (currMode === 'maximized') {
+            // Save maximized dimensions into separate object.
+            maximized = snapshotWindowSize();
         }
         state.mode = currMode;
         localStorage.windowState = JSON.stringify(state);
