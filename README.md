@@ -7,8 +7,8 @@ It's just a bunch of scripts, so you can change/extend/delete every part you don
 
 - Supports all 3 operating systems supported by NW.js (OSX, Linux, Windows).
 - Lets you start developing NW.js app just by typing 3 commands in terminal.
-- Has preconfigured, full blown development environment.
-- Spits out ready for distribution installers for every operating system.
+- Has preconfigured development environment.
+- Can create ready for distribution installer for every operating system.
 
 
 # Quick start
@@ -99,9 +99,7 @@ You don't have to declare paths to spec files in any particular place. The runne
 
 # Making a release
 
-There are various icon and bitmap files in `os` directory. They are used in installers. Replace them with your own of the same size and file type (if bmp is used, it has to be bmp format).
-
-To make a release use command:
+To make ready for distribution installer use command:
 ```
 npm run release
 ```
@@ -109,16 +107,18 @@ It will start the packaging process for operating system you are running this co
 
 You can create Windows installer only when running on Windows, the same is true for Linux and OSX. So to generate all three installers you need all three operating systems.
 
+**Note:** There are various icon and bitmap files in `os` directory. Those are used in installers and are intended to be replaced by your own.
+
 
 # Precautions for particular operating system
 
 ## Windows
-As installer [NSIS](http://nsis.sourceforge.net/Main_Page) is used. You have to install it (version 3.0), and add NSIS folder to PATH in Environment Variables (so it is reachable to scripts in this project). You know, path should look something like `C:/Program Files (x86)/NSIS`.
+As installer [NSIS](http://nsis.sourceforge.net/Main_Page) is used. You have to install it (version 3.0), and add NSIS folder to PATH in Environment Variables, so it is reachable to scripts in this project (path should look something like `C:/Program Files (x86)/NSIS`).
 
 ## Linux
-This project requires for node.js to be reachable under `node` name in command line. For example by default in Ubuntu it is `nodejs`, so you should manully add alias to `node`.
+This project requires for node.js to be reachable under `node` name in command line. For example on Ubuntu it is `nodejs` by default, so you need to manully add alias to `node`.
 
-For now only deb packaging is supported. It should work on any Linux distribution from debian family (but was tested only on Ubuntu).
+For now only DEB packaging is supported. It should work on any Linux distribution from debian family (but was tested only on Ubuntu).
 
 ## OSX
 This project uses [appdmg](https://github.com/LinusU/node-appdmg) for creating pretty dmg images. While installing this library it could ask you for some additional development libraries on what you have to agree.  
