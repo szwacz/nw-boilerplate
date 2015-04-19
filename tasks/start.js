@@ -2,6 +2,7 @@
 
 var Q = require('q');
 var nw = require('nw');
+var pathUtil = require('path');
 var childProcess = require('child_process');
 var utils = require('./utils');
 
