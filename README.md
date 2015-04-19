@@ -1,59 +1,49 @@
 nw-boilerplate
 ==============
-Comprehensive, ready for serious stuff, boilerplate application for [NW.js](https://github.com/nwjs/nw.js).  
-It's just a bunch of scripts, so you can change/extend/delete every part you don't like.
+Comprehensive boilerplate application for [NW.js](https://github.com/nwjs/nw.js).  
 
-# What it can do?
-
-- Supports all 3 operating systems supported by NW.js (OSX, Linux, Windows).
-- Lets you start developing NW.js app just by typing 3 commands in terminal.
-- Has preconfigured development environment.
-- Can create ready for distribution installer for every operating system.
-
+This project gives you mainly three things:  
+1. Crossplatform development environment (works the same way on OSX, Windows and Linux).
+2. Basic structure for NW.js app.
+3. Scripts to generate installers of your app for all three operating systems.
 
 # Quick start
-
 The only development dependency of this project is Node.js. So just make sure you have it installed.
-
-1. Clone/download this repository (e.g. `git clone https://github.com/szwacz/nw-boilerplate.git`).
-2. Install dependencies with `npm install` (it will also download NW.js runtime).
-3. Run `npm start` to launch the application.
-
+Then type three commands known to every Node.js developer...
+```
+git clone https://github.com/szwacz/nw-boilerplate.git
+npm install
+npm start
+```
+... and boom! You have running desktop application on your screen.
 
 # Structure of the project
 
 There are two `package.json` files:  
 
-#### 1. Development package.json
-Placed in root directory. This file contains:
-- Node modules used for development (Those are not needed in real application, so no need to pollute it with them).
-- Declaration for NW.js runtime. This is the most interesting part:
-```
-"config": {
-  "nw": {
-    "version": "0.12.0",
-    "downloadUrls": {
-      "osx": "http://dl.nwjs.io/v{{version}}/nwjs-v{{version}}-osx-x64.zip",
-      "linux": "https://dl.nwjs.io/v{{version}}/nwjs-v{{version}}-linux-x64.tar.gz",
-      "windows": "https://dl.nwjs.io/v{{version}}/nwjs-{{version}}-win-ia32.zip"
-    }
-  }
-},
-```
-You declare here which version of NW.js you want to use and the URLs from where NW binaries should be downloaded.
+#### 1. Development
+On path: `nw-boilerplate/package.json`. Here you declare dependencies for your development environment. This file is not shiped with real application.
 
-#### 2. Application package.json
-Placed in **app** directory. This is real manifest of your application, as specified by [NW wiki](https://github.com/nwjs/nw.js/wiki/Manifest-format). Declare your app dependencies there.
+Also here you declare wersion of NW.js runtime you want to use:
+```json
+"devDependencies": {
+  ...
+  "nw": "^0.12.1",
+  ...
+}
+```
 
-There is one extra field in this file: `productName`. Unlike the `name` field, which have to be file-path-freindly (no spaces and strange characters), `productName` could have any characters you like, and it's used as the app name displayed to the user.
+#### 2. Application
+On path: `nw-boilerplate/app/package.json`. This is real manifest of your application, as specified by [NW wiki](https://github.com/nwjs/nw.js/wiki/Manifest-format). Declare your app dependencies here.
+
+There is one extra field in this file you won't find in NW docs: `productName`. Unlike the `name` field, which have to be file-path-freindly (no spaces and strange characters), `productName` could have any characters you like, and it's used as the app name displayed to the user.
 
 ### Project's folders
 
 - `app` - code of your application goes here.
 - `build` - in this folder lands built, runnable application.
-- `nw` - downloaded NW.js binaries.
-- `os` - application files specific for particular operating system.
 - `releases` - ready to distribute installers will land here.
+- `resources` - resources for particular operating system.
 - `tasks` - build and development environment scripts.
 
 
@@ -121,8 +111,7 @@ This project requires for node.js to be reachable under `node` name in command l
 For now only DEB packaging is supported. It should work on any Linux distribution from debian family (but was tested only on Ubuntu).
 
 ## OSX
-This project uses [appdmg](https://github.com/LinusU/node-appdmg) for creating pretty dmg images. While installing this library it could ask you for some additional development libraries on what you have to agree.  
-**BTW** installation of this library fails on other operating systems (Windows and Linux) when you type `npm install`. No worries, it's needed only on OSX.
+This project uses [appdmg](https://github.com/LinusU/node-appdmg) for creating pretty DMG images. While installing this library it could ask you for some additional development libraries on what you have to agree.
 
 
 # License
