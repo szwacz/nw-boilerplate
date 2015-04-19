@@ -30,7 +30,11 @@ var copyBuiltApp = function () {
     return projectDir.copyAsync('build', readyAppDir.path(), { overwrite: true });
 };
 
-var packToDebFile = function () {
+var prepareOsSpecificThings = function () {
+    return projectDir.copyAsync('resources/windows/icon.ico', readyAppDir.path('icon.ico'));
+};
+
+var createInstaller = function () {
     var deferred = Q.defer();
 
     var finalPackageName = manifest.name + '_' + manifest.version + '.exe';
@@ -41,7 +45,7 @@ var packToDebFile = function () {
         version: manifest.version,
         src: readyAppDir.path(),
         dest: releasesDir.path(finalPackageName),
-        icon: projectDir.path('resources/windows/icon.ico'),
+        icon: readyAppDir.path('icon.ico'),
         setupIcon: projectDir.path('resources/windows/setup-icon.ico'),
         banner: projectDir.path('resources/windows/setup-banner.bmp'),
     });
@@ -69,6 +73,7 @@ module.exports = function () {
     return init()
     .then(copyRuntime)
     .then(copyBuiltApp)
-    .then(packToDebFile)
+    .then(prepareOsSpecificThings)
+    .then(createInstaller)
     .then(cleanClutter);
 };
