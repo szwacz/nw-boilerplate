@@ -1,5 +1,4 @@
-// Named exports test
-
+// Named imports test
 import { greet, bye } from './hello_world';
 
 describe("hello world", function () {

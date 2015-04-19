@@ -1,3 +1,8 @@
+// -----------------------------------------------------
+// Here is starting point for your own code.
+// All stuff below is just to show you haw it works.
+// -----------------------------------------------------
+
 // Browser modules are required through new ES6 syntax.
 import { greet } from './hello_world/hello_world';
 

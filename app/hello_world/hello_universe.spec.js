@@ -1,5 +1,4 @@
 // Default imports test
-
 import greet from './hello_universe';
 
 describe("hello universe", function () {

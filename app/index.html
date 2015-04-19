@@ -5,23 +5,15 @@
 
     <link href="./stylesheets/main.css" rel="stylesheet" type="text/css">
 
+    <!-- Scripts giving you few extra things in NW.js -->
     <script src="vendor/nwbp/window-state.js"></script>
     <script src="vendor/nwbp/contextmenu.js"></script>
     <script src="vendor/nwbp/external-links.js"></script>
     <script src="vendor/nwbp/dev-helpers.js"></script>
-
-    <script src="vendor/require.js"></script>
-    <script>
-        requirejs(['app'], function (app) {});
-    </script>
-
     <script>
         (function () {
             var gui = require('nw.gui');
             var win = gui.Window.get();
-
-            // Set focus on window. Just in case we don't have it.
-            win.focus();
 
             // Get name of the app from package.json and set it as title.
             document.title = gui.App.manifest.productName;
@@ -33,6 +25,12 @@
                 win.menu = mb;
             }
         }());
+    </script>
+
+    <!-- Load real app code -->
+    <script src="vendor/require.js"></script>
+    <script>
+        requirejs(['app'], function (app) {});
     </script>
 </head>
 <body>
