@@ -2,7 +2,8 @@ nw-boilerplate
 ==============
 Comprehensive boilerplate application for [NW.js](https://github.com/nwjs/nw.js).  
 
-This project gives you mainly three things:  
+This project gives you mainly three things:
+
 1. Crossplatform development environment (works the same way on OSX, Windows and Linux).
 2. Basic structure for NW.js app.
 3. Scripts to generate installers of your app for all three operating systems.
@@ -19,22 +20,20 @@ npm start
 
 # Structure of the project
 
-There are two `package.json` files:  
+There are **two** `package.json` files:  
 
-#### 1. Development
-On path: `nw-boilerplate/package.json`. Here you declare dependencies for your development environment. This file is not shiped with real application.
+#### 1. For development
+Sits on path: `nw-boilerplate/package.json`. Here you declare dependencies for your development environment and build scripts. **This file is not distributed with real application!**
 
 Also here you declare wersion of NW.js runtime you want to use:
 ```json
 "devDependencies": {
-  ...
-  "nw": "^0.12.1",
-  ...
+  "nw": "^0.12.1"
 }
 ```
 
 #### 2. Application
-On path: `nw-boilerplate/app/package.json`. This is real manifest of your application, as specified by [NW wiki](https://github.com/nwjs/nw.js/wiki/Manifest-format). Declare your app dependencies here.
+Sits on path: `nw-boilerplate/app/package.json`. This is **real** manifest of your application, as specified by [NW wiki](https://github.com/nwjs/nw.js/wiki/Manifest-format). Declare your app dependencies here.
 
 There is one extra field in this file you won't find in NW docs: `productName`. Unlike the `name` field, which have to be file-path-freindly (no spaces and strange characters), `productName` could have any characters you like, and it's used as the app name displayed to the user.
 
@@ -74,11 +73,7 @@ import myOwnModule from './my_own_module';
 var moment = require('moment');
 ```
 
-#### Helper scripts
-
-There are helper scripts in `app/vendor/nwbp` folder. Those are scripts with convenient hooks wou will need  anyway (like window size and position preservation). Just browse this folder to see what you get.
-
-#### Unit tests
+#### Unit testing
 
 nw-boilerplate has preconfigured unit test runner ([jasmine](http://jasmine.github.io/2.0/introduction.html)). To run it go with standard:
 ```
