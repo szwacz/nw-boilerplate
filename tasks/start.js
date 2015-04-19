@@ -1,30 +1,60 @@
 'use strict';
 
-var gulp = require('gulp');
+var Q = require('q');
+var nw = require('nw');
 var childProcess = require('child_process');
 var utils = require('./utils');
 
-// Starts the app in /build folder and runs gulp watch for the time, when app is running.
-gulp.task('start', ['watch', 'build'], function () {
-    var app;
+var runBuild = function () {
+    var deferred = Q.defer();
 
-    switch (utils.os()) {
-        case 'osx':
-            app = childProcess.spawn('./build/nwjs.app/Contents/MacOS/nwjs');
-            break;
-        case 'linux':
-            app = childProcess.spawn('./build/nw');
-            break;
-        case 'windows':
-            app = childProcess.spawn('build/nw.exe');
-            break;
-    }
+    var build = childProcess.spawn('./node_modules/.bin/gulp', [
+        'build',
+        '--target=' + utils.getBuildTarget(),
+        '--color'
+    ]);
+
+    build.stdout.pipe(process.stdout);
+    build.stderr.pipe(process.stderr);
+
+    build.on('close', function (code) {
+        deferred.resolve();
+    });
+
+    return deferred.promise;
+};
+
+var runGulpWatch = function () {
+    var watch = childProcess.spawn('./node_modules/.bin/gulp', [
+        'watch',
+        '--target=' + utils.getBuildTarget(),
+        '--color'
+    ]);
+
+    watch.stdout.pipe(process.stdout);
+    watch.stderr.pipe(process.stderr);
+
+    watch.on('close', function (code) {
+        // Gulp watch exits when error occured during build.
+        // Just respawn it then.
+        runGulpWatch();
+    });
+};
+
+var runApp = function () {
+    var app = childProcess.spawn(nw.findpath(), ['./build']);
 
     app.stdout.pipe(process.stdout);
     app.stderr.pipe(process.stderr);
 
     app.on('close', function (code) {
-        // Kill this gulp (watch) process when application closes.
+        // User closed the app. Kill the host process.
         process.exit();
     });
+};
+
+runBuild()
+.then(function () {
+    runGulpWatch();
+    runApp();
 });
