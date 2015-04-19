@@ -17,7 +17,7 @@ var init = function () {
     tmpDir = utils.createTmpDir();
     releasesDir = projectDir.dir('./releases');
     manifest = projectDir.read('app/package.json', 'json');
-    finalAppDir = tmpDir.cwd(manifest.prettyName + '.app');
+    finalAppDir = tmpDir.cwd(manifest.productName + '.app');
 
     return Q();
 };
@@ -34,7 +34,7 @@ var prepareOsSpecificThings = function () {
     // Info.plist
     var info = projectDir.read('os/osx/Info.plist');
     info = utils.replace(info, {
-        prettyName: manifest.prettyName,
+        productName: manifest.productName,
         version: manifest.version
     });
     finalAppDir.write('Contents/Info.plist', info);
@@ -54,7 +54,7 @@ var packToDmgFile = function () {
     // Prepare appdmg config
     var dmgManifest = projectDir.read('os/osx/appdmg.json');
     dmgManifest = utils.replace(dmgManifest, {
-        prettyName: manifest.prettyName,
+        productName: manifest.productName,
         appPath: finalAppDir.path(),
         dmgIcon: projectDir.path("os/osx/dmg-icon.icns"),
         dmgBackground: projectDir.path("os/osx/dmg-background.png")

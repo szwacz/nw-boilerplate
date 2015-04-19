@@ -1,5 +1,5 @@
 {
-  "title": "{{prettyName}}",
+  "title": "{{productName}}",
   "icon": "{{dmgIcon}}",
   "background": "{{dmgBackground}}",
   "icon-size": 128,

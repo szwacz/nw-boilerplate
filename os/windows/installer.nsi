@@ -11,7 +11,7 @@
 !define dest "{{dest}}"
 !define src "{{src}}"
 !define name "{{name}}"
-!define prettyName "{{prettyName}}"
+!define productName "{{productName}}"
 !define version "{{version}}"
 !define icon "{{icon}}"
 !define setupIcon "{{setupIcon}}"
@@ -44,7 +44,7 @@ ShowInstDetails nevershow
 AutoCloseWindow false
 WindowIcon off
 
-Caption "${prettyName} Setup"
+Caption "${productName} Setup"
 ; Don't add sub-captions to title bar
 SubCaption 3 " "
 SubCaption 4 " "
@@ -69,7 +69,7 @@ Function welcome
 
     nsDialogs::Create 1018
     
-    ${NSD_CreateLabel} 185 1u 210 100% "Welcome to ${prettyName} version ${version} installer.$\r$\n$\r$\nClick install to begin."
+    ${NSD_CreateLabel} 185 1u 210 100% "Welcome to ${productName} version ${version} installer.$\r$\n$\r$\nClick install to begin."
     
     ${NSD_CreateBitmap} 0 0 170 210 ""
     Pop $Image
@@ -110,8 +110,8 @@ SectionEnd
 
 ShowUninstDetails nevershow
 
-UninstallCaption "Uninstall ${prettyName}"
-UninstallText "Don't like ${prettyName} anymore? Hit uninstall button."
+UninstallCaption "Uninstall ${productName}"
+UninstallText "Don't like ${productName} anymore? Hit uninstall button."
 UninstallIcon "${icon}"
 
 UninstPage custom un.confirm un.confirmOnLeave
@@ -125,9 +125,9 @@ Function un.confirm
 
     nsDialogs::Create 1018
     
-    ${NSD_CreateLabel} 1u 1u 100% 24u "If you really want to remove ${prettyName} from your computer press uninstall button."
+    ${NSD_CreateLabel} 1u 1u 100% 24u "If you really want to remove ${productName} from your computer press uninstall button."
 
-    ${NSD_CreateCheckbox} 1u 35u 100% 10u "Remove also my ${prettyName} personal data"
+    ${NSD_CreateCheckbox} 1u 35u 100% 10u "Remove also my ${productName} personal data"
     Pop $RemoveAppDataCheckbox
 
     nsDialogs::Show

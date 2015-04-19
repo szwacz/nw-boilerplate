@@ -24,12 +24,12 @@
             win.focus();
 
             // Get name of the app from package.json and set it as title.
-            document.title = gui.App.manifest.prettyName;
+            document.title = gui.App.manifest.productName;
 
             // Create default menu items for OSX
             if (process.platform === 'darwin') {
                 var mb = new gui.Menu({ type: "menubar" });
-                mb.createMacBuiltin(gui.App.manifest.prettyName);
+                mb.createMacBuiltin(gui.App.manifest.productName);
                 win.menu = mb;
             }
         }());
