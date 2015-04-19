@@ -96,7 +96,7 @@ gulp.task('finalize', ['clean'], function () {
     }
     destDir.write('package.json', manifest);
 
-    projectDir.copy('os/icon.png', destDir.path('icon.png'));
+    projectDir.copy('resources/icon.png', destDir.path('icon.png'));
 });
 
 

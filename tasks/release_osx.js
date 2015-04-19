@@ -32,7 +32,7 @@ var copyBuiltApp = function () {
 
 var prepareOsSpecificThings = function () {
     // Info.plist
-    var info = projectDir.read('os/osx/Info.plist');
+    var info = projectDir.read('resources/osx/Info.plist');
     info = utils.replace(info, {
         productName: manifest.productName,
         version: manifest.version
@@ -40,7 +40,7 @@ var prepareOsSpecificThings = function () {
     finalAppDir.write('Contents/Info.plist', info);
 
     // Icon
-    projectDir.copy('os/osx/icon.icns', finalAppDir.path('Contents/Resources/icon.icns'));
+    projectDir.copy('resources/osx/icon.icns', finalAppDir.path('Contents/Resources/icon.icns'));
 
     return Q();
 };
@@ -52,12 +52,12 @@ var packToDmgFile = function () {
     var dmgName = manifest.name + '_' + manifest.version + '.dmg';
 
     // Prepare appdmg config
-    var dmgManifest = projectDir.read('os/osx/appdmg.json');
+    var dmgManifest = projectDir.read('resources/osx/appdmg.json');
     dmgManifest = utils.replace(dmgManifest, {
         productName: manifest.productName,
         appPath: finalAppDir.path(),
-        dmgIcon: projectDir.path("os/osx/dmg-icon.icns"),
-        dmgBackground: projectDir.path("os/osx/dmg-background.png")
+        dmgIcon: projectDir.path("resources/osx/dmg-icon.icns"),
+        dmgBackground: projectDir.path("resources/osx/dmg-background.png")
     });
     tmpDir.write('appdmg.json', dmgManifest);
 
