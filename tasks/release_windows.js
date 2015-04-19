@@ -33,14 +33,14 @@ var copyBuiltApp = function () {
 var packToDebFile = function () {
     var deferred = Q.defer();
 
-    var filename = manifest.name + '_' + manifest.version + '.exe';
+    var finalPackageName = manifest.name + '_' + manifest.version + '.exe';
     var installScript = projectDir.read('resources/windows/installer.nsi');
     installScript = utils.replace(installScript, {
         name: manifest.name,
         productName: manifest.productName,
         version: manifest.version,
         src: readyAppDir.path(),
-        dest: releasesDir.path(filename),
+        dest: releasesDir.path(finalPackageName),
         icon: projectDir.path('resources/windows/icon.ico'),
         setupIcon: projectDir.path('resources/windows/setup-icon.ico'),
         banner: projectDir.path('resources/windows/setup-banner.bmp'),
@@ -54,7 +54,7 @@ var packToDebFile = function () {
     nsis.stdout.pipe(process.stdout);
     nsis.stderr.pipe(process.stderr);
     nsis.on('close', function () {
-        gulpUtil.log('Installer ready!', );
+        gulpUtil.log('Installer ready!', releasesDir.path(finalPackageName));
         deferred.resolve();
     });
 
