@@ -2,6 +2,7 @@
 
 var argv = require('yargs').argv;
 var os = require('os');
+var jetpack = require('fs-jetpack');
 
 module.exports.os = function () {
     switch (os.platform()) {
@@ -25,4 +26,8 @@ module.exports.replace = function (str, patterns) {
 
 module.exports.getBuildTarget = function () {
     return argv.target || 'development';
+};
+
+module.exports.createTmpDir = function () {
+    return jetpack.dir('./tmp', { empty: true });
 };
