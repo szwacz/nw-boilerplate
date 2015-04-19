@@ -81,17 +81,11 @@ gulp.task('finalize', ['clean'], function () {
             manifest.name += '-test';
             // Change the main entry to spec runner.
             manifest.main = 'spec.html';
-            // Set extra flag so we know this is development mode, and we can
-            // alter some behaviours of running app.
-            manifest.developmentMode = true;
             break;
         case 'development':
             // Add "-dev" suffix to name, so NW.js will write all
             // data like cookies and locaStorage into separate place.
             manifest.name += '-dev';
-            // Set extra flag so we know this is development mode, and we can
-            // alter some behaviours of running app.
-            manifest.developmentMode = true;
             break;
     }
     destDir.write('package.json', manifest);

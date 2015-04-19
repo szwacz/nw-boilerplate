@@ -27,7 +27,3 @@ module.exports.replace = function (str, patterns) {
 module.exports.getBuildTarget = function () {
     return argv.target || 'development';
 };
-
-module.exports.createTmpDir = function () {
-    return jetpack.dir('./tmp', { empty: true });
-};

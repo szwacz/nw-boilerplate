@@ -14,7 +14,7 @@ var manifest;
 
 var init = function () {
     projectDir = jetpack;
-    tmpDir = utils.createTmpDir();
+    tmpDir = projectDir.dir('./tmp');
     releasesDir = projectDir.dir('./releases');
     manifest = projectDir.read('app/package.json', 'json');
     finalAppDir = tmpDir.cwd(manifest.productName + '.app');
