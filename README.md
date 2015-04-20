@@ -98,9 +98,6 @@ You can create Windows installer only when running on Windows, the same is true 
 ## Special precautions for Windows
 As installer [NSIS](http://nsis.sourceforge.net/Main_Page) is used. You have to install it (version 3.0), and add NSIS folder to PATH in Environment Variables, so it is reachable to scripts in this project (path should look something like `C:/Program Files (x86)/NSIS`).
 
-## Special precautions for OSX
-This project uses [appdmg](https://github.com/LinusU/node-appdmg) to create pretty DMG image. While installing, this library could ask you to install additional development stuff on what you have to agree.
-
 
 # License
 
