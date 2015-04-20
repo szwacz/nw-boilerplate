@@ -95,18 +95,11 @@ It will start the packaging process for operating system you are running this co
 You can create Windows installer only when running on Windows, the same is true for Linux and OSX. So to generate all three installers you need all three operating systems.
 
 
-## Precautions for particular operating system
-
-### Windows
+## Special precautions for Windows
 As installer [NSIS](http://nsis.sourceforge.net/Main_Page) is used. You have to install it (version 3.0), and add NSIS folder to PATH in Environment Variables, so it is reachable to scripts in this project (path should look something like `C:/Program Files (x86)/NSIS`).
 
-### Linux
-This project requires for node.js to be reachable under `node` name in command line. For example on Ubuntu it is `nodejs` by default, so you need to manully add alias to `node`.
-
-For now only DEB packaging is supported. It should work on any Linux distribution from debian family (but was tested only on Ubuntu).
-
-### OSX
-This project uses [appdmg](https://github.com/LinusU/node-appdmg) to create pretty DMG image. While installing this library could ask you to install some additional development libraries on what you have to agree.
+## Special precautions for OSX
+This project uses [appdmg](https://github.com/LinusU/node-appdmg) to create pretty DMG image. While installing, this library could ask you to install additional development stuff on what you have to agree.
 
 
 # License
