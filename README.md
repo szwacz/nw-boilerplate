@@ -4,13 +4,13 @@ Comprehensive boilerplate application for [NW.js](https://github.com/nwjs/nw.js)
 
 This project gives you mainly three things:
 
-1. Crossplatform development environment (works the same way on OSX, Windows and Linux).
+1. Cross-platform development environment (works the same way on OSX, Windows and Linux).
 2. Basic structure for NW.js app.
 3. Scripts to generate installers of your app for all three operating systems.
 
 # Quick start
-The only development dependency of this project is Node.js. So just make sure you have it installed.
-Then type three commands known to every Node.js developer...
+The only development dependency of this project is [Node.js](https://nodejs.org). So just make sure you have it installed.
+Then type three commands known to every Node developer...
 ```
 git clone https://github.com/szwacz/nw-boilerplate.git
 npm install
@@ -32,7 +32,7 @@ Also here you declare wersion of NW.js runtime you want to use:
 }
 ```
 
-#### 2. Application
+#### 2. For your application
 Sits on path: `nw-boilerplate/app/package.json`. This is **real** manifest of your application, as specified by [NW wiki](https://github.com/nwjs/nw.js/wiki/Manifest-format). Declare your app dependencies here.
 
 There is one extra field in this file you won't find in NW docs: `productName`. Unlike the `name` field, which have to be file-path-freindly (no spaces and strange characters), `productName` could have any characters you like, and it's used as the app name displayed to the user.
@@ -41,7 +41,7 @@ There is one extra field in this file you won't find in NW docs: `productName`. 
 
 - `app` - code of your application goes here.
 - `build` - in this folder lands built, runnable application.
-- `releases` - ready to distribute installers will land here.
+- `releases` - ready for distribution installers will land here.
 - `resources` - resources for particular operating system.
 - `tasks` - build and development environment scripts.
 
@@ -53,7 +53,7 @@ There is one extra field in this file you won't find in NW docs: `productName`. 
 ```
 npm install
 ```
-It will also download NW runtime, and install dependencies for `package.json` inside `app` folder.
+It will also download NW runtime, and install dependencies for second `package.json` file inside `app` folder.
 
 #### Starting the app
 
@@ -73,16 +73,18 @@ import myOwnModule from './my_own_module';
 var moment = require('moment');
 ```
 
-#### Unit testing
+#### Unit tests
 
-nw-boilerplate has preconfigured unit test runner ([jasmine](http://jasmine.github.io/2.0/introduction.html)). To run it go with standard:
+nw-boilerplate has preconfigured [jasmine](http://jasmine.github.io/2.0/introduction.html) unit test runner. To run it go with standard:
 ```
 npm test
 ```
-You don't have to declare paths to spec files in any particular place. The runner will search throu the project for all `*.spec.js` files and include them automatically.
+You don't have to declare paths to spec files in any particular place. The runner will search through the project for all `*.spec.js` files and include them automatically.
 
 
 # Making a release
+
+**Note:** There are various icon and bitmap files in `resources` directory. Those are used in installers and are intended to be replaced by your own graphics.
 
 To make ready for distribution installer use command:
 ```
@@ -92,21 +94,19 @@ It will start the packaging process for operating system you are running this co
 
 You can create Windows installer only when running on Windows, the same is true for Linux and OSX. So to generate all three installers you need all three operating systems.
 
-**Note:** There are various icon and bitmap files in `os` directory. Those are used in installers and are intended to be replaced by your own.
 
+## Precautions for particular operating system
 
-# Precautions for particular operating system
-
-## Windows
+### Windows
 As installer [NSIS](http://nsis.sourceforge.net/Main_Page) is used. You have to install it (version 3.0), and add NSIS folder to PATH in Environment Variables, so it is reachable to scripts in this project (path should look something like `C:/Program Files (x86)/NSIS`).
 
-## Linux
+### Linux
 This project requires for node.js to be reachable under `node` name in command line. For example on Ubuntu it is `nodejs` by default, so you need to manully add alias to `node`.
 
 For now only DEB packaging is supported. It should work on any Linux distribution from debian family (but was tested only on Ubuntu).
 
-## OSX
-This project uses [appdmg](https://github.com/LinusU/node-appdmg) for creating pretty DMG images. While installing this library it could ask you for some additional development libraries on what you have to agree.
+### OSX
+This project uses [appdmg](https://github.com/LinusU/node-appdmg) to create pretty DMG image. While installing this library could ask you to install some additional development libraries on what you have to agree.
 
 
 # License
