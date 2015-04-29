@@ -37,6 +37,8 @@ gulp.task('clean', function(callback) {
 
 
 var copyTask = function () {
+    projectDir.copy('resources/icon.png', destDir.path('icon.png'));
+
     return projectDir.copyAsync('app', destDir.path(), {
         overwrite: true,
         matching: paths.toCopy
@@ -70,8 +72,8 @@ gulp.task('less-watch', lessTask);
 // Add and customize OS-specyfic and target-specyfic stuff.
 gulp.task('finalize', ['clean'], function () {
     var manifest = srcDir.read('package.json', 'json');
-    switch (utils.getBuildTarget()) {
-        case 'release':
+    switch (utils.getEnvName()) {
+        case 'production':
             // Hide dev toolbar if doing a release.
             manifest.window.toolbar = false;
             break;
@@ -90,7 +92,8 @@ gulp.task('finalize', ['clean'], function () {
     }
     destDir.write('package.json', manifest);
 
-    projectDir.copy('resources/icon.png', destDir.path('icon.png'));
+    var configFilePath = projectDir.path('config/env_' + utils.getEnvName() + '.json');
+    destDir.copy(configFilePath, 'env_config.json');
 });
 
 

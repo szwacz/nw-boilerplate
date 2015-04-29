@@ -17,7 +17,7 @@
     "postinstall": "cd ./app  &&  npm install",
     "build": "./node_modules/.bin/gulp build",
     "start": "node ./tasks/start",
-    "test": "node ./tasks/start --target=test",
-    "release": "./node_modules/.bin/gulp release --target=release"
+    "test": "node ./tasks/start --env=test",
+    "release": "./node_modules/.bin/gulp release --env=production"
   }
 }

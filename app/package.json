@@ -1,21 +1,21 @@
 {
-    "name": "nw-boilerplate",
-    "productName": "NW.js Boilerplate App",
-    "description": "Starter for NW.js application. Out of the box ready for serious stuff.",
-    "version": "0.1.0",
-    "author": "Mr Gumby <gumby@sillywalks.com>",
-    "main": "index.html",
-    "window": {
-        "icon": "icon.png",
-        "show": true,
-        "toolbar": true,
-        "width": 1000,
-        "height": 600,
-        "min_width": 800,
-        "min_height": 400,
-        "position": "center"
-    },
-    "dependencies": {
-
-    }
+  "name": "nw-boilerplate",
+  "productName": "NW.js Boilerplate App",
+  "description": "Starter for NW.js application. Out of the box ready for serious stuff.",
+  "version": "0.1.0",
+  "author": "Mr Gumby <gumby@sillywalks.com>",
+  "main": "index.html",
+  "window": {
+    "icon": "icon.png",
+    "show": true,
+    "toolbar": true,
+    "width": 1000,
+    "height": 600,
+    "min_width": 800,
+    "min_height": 400,
+    "position": "center"
+  },
+  "dependencies": {
+    "fs-jetpack": "^0.6.4"
+  }
 }
