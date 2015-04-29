@@ -4,7 +4,7 @@
   "description": "Starter for NW.js application. Out of the box ready for serious stuff.",
   "version": "0.1.0",
   "author": "Mr Gumby <gumby@sillywalks.com>",
-  "main": "index.html",
+  "main": "app.html",
   "window": {
     "icon": "icon.png",
     "show": true,
