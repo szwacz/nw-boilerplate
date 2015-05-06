@@ -2,6 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
+    <title>NW Boilerplate</title>
 
     <link href="./stylesheets/main.css" rel="stylesheet" type="text/css">
 
@@ -15,9 +16,6 @@
         (function () {
             var gui = require('nw.gui');
             var win = gui.Window.get();
-
-            // Get name of the app from package.json and set it as title.
-            document.title = gui.App.manifest.productName;
 
             // Create default menu items for OSX
             if (process.platform === 'darwin') {
