@@ -67,7 +67,7 @@ npm start
 
 #### Module loader
 
-How about splitting your JavaScript code into modules? This project supports it by new ES6 syntax (thanks to [esperanto](https://github.com/esperantojs/esperanto)). ES6 modules are translated into AMD (RequireJS) modules. The main advantage of this setup is that you can use ES6/RequireJS for your own modules, and at the same time have normal access to node's `require()` to obtain stuff from npm.
+How about splitting your JavaScript code into modules? This project supports it by new ES6 syntax (thanks to [babel](https://babeljs.io/)). ES6 modules are translated into AMD (RequireJS) modules. The main advantage of this setup is that you can use ES6/RequireJS for your own modules, and at the same time have normal access to node's `require()` to obtain stuff from npm.
 ```javascript
 // Modules you write are required through new ES6 syntax
 // (It will be translated into AMD definition).
