@@ -16,12 +16,10 @@ var paths = {
     jsCodeToTranspile: [
         'app/**/*.js',
         '!app/node_modules/**',
-        '!app/bower_components/**',
         '!app/vendor/**'
     ],
     copyFromAppDir: [
         './node_modules/**',
-        './bower_components/**',
         './vendor/**',
         './**/*.html'
     ],
